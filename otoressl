@@ -1,0 +1,34 @@
+#!/bin/bash
+
+isCrontab=$(which crontab)
+OS=$(hostnamectl | grep "Operating System" | awk '{print $3}')
+
+if [[ $isCrontab == "" ]]; then
+  
+  case $OS in
+    "Arch")
+      sudo pacman -Syyy cronie
+      systemctl enable --now cronie
+      ;;
+    "Ubuntu")
+      apt-get update && apt-get install cron
+      systemctl enable --now cron
+      ;;
+    "CentOS")
+      yum update && yum install cronie
+      systemctl enable --now cronie
+      ;;
+  esac
+  
+fi
+
+crontab -l | sed 's/.*certbot.*//' | crontab -
+crontab -l | sed '/^$/d'| crontab -
+
+validDay=$(certbot certificates | grep Expiry | awk '{print $6}')
+renewDay="$(($validDay - 10))"
+
+month=$(date --date="+$renewDay days" +%-m)
+day=$(date --date="+$renewDay days" +%-d)
+
+{ crontab -l; echo "0 9 $day $month * /usr/bin/certbot renew"; } | crontab -
