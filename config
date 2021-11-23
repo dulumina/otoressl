@@ -1,0 +1,4 @@
+#!/bin/bash
+
+TOKEN_BOT_TELEGRAM="" # BOT TOKEN
+ID_BOT_TELEGRAM="" # Chat ID

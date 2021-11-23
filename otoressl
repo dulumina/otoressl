@@ -1,4 +1,28 @@
 #!/bin/bash
+source ./config
+
+validDay=$(certbot certificates | grep Expiry | awk '{print $6}')
+if [[ $validDay < 30 ]]; then
+  curl -s -X POST https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage -d chat_id=${ID_BOT_TELEGRAM} -d text="NOTIF SSL @$(cat /etc/hostname)
+
+Renewing certificate..
+"
+  echo "Renewing certificate.."
+  if $(which certbot) renew; then
+    curl -s -X POST https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage -d chat_id=${ID_BOT_TELEGRAM} -d text="NOTIF SSL
+
+Success! certificate renewed..
+menghitung hari untuk dibuatkan cronjob/automatic renew certificate...
+"
+
+    echo "Success! certificate renewed..
+menghitung hari untuk dibuatkan cronjob/automatic renew certificate...
+"
+  fi
+else
+  echo "belum memasuki waktu yang pas untuk renew certificate"
+  echo "menghitung hari untuk dibuatkan cronjob/automatic renew certificate..."
+fi
 
 isCrontab=$(which crontab)
 OS=$(hostnamectl | grep "Operating System" | awk '{print $3}')
@@ -25,10 +49,9 @@ fi
 crontab -l | sed 's/.*certbot.*//' | crontab -
 crontab -l | sed '/^$/d'| crontab -
 
-validDay=$(certbot certificates | grep Expiry | awk '{print $6}')
 renewDay="$(($validDay - 10))"
 
 month=$(date --date="+$renewDay days" +%-m)
 day=$(date --date="+$renewDay days" +%-d)
 
-{ crontab -l; echo "0 9 $day $month * /usr/bin/certbot renew"; } | crontab -
+{ crontab -l; echo "0 9 $day $month * source $(pwd)/otoressl"; } | crontab -
