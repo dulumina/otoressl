@@ -2,7 +2,7 @@
 OS=$(hostnamectl | grep "Operating System" | awk '{print $3}')
 validDay=$(certbot certificates | grep Expiry | awk '{print $6}')
 
-echo ""
+echo "----------------------------------------"
 echo "Mengecek tanggal expire sertifikat ssl.."
 source ./config
 
@@ -25,12 +25,14 @@ Renewing certificate..
       if [[ $1 == "--disable-firewall" ]]; then
         case $2 in
           "iptables")
+            echo "--------------------------"
             echo "menon-aktifkan firewall.."
             if systemctl stop iptables; then
               echo "berhasil menon-aktifkan firewall.."
             fi
             ;;
           "firewalld")
+            echo "--------------------------"
             echo "menon-aktifkan firewall.."
             if systemctl stop firewalld; then
               echo "berhasil menon-aktifkan firewall.."
@@ -50,11 +52,13 @@ menghitung hari untuk dibuatkan cronjob/automatic renew certificate...
 " &>/dev/null &
     fi
 
+    echo "-----------------------------"
     echo "Success! certificate renewed..
 menghitung hari untuk dibuatkan cronjob/automatic renew certificate...
 "
   fi
 else
+  echo "--------------------------------------------------------"
   echo "belum memasuki waktu yang pas untuk renew certificate..."
   echo "menghitung hari untuk dibuatkan cronjob/automatic renew certificate..."
 fi
@@ -96,7 +100,7 @@ if [[ $TOKEN_BOT_TELEGRAM && $ID_BOT_TELEGRAM != "" ]]; then
 berhasil membuat cronjob untuk otomisasi renew certificate..
 " &>/dev/null &
 fi
-echo ""
+echo "------------------------------------------------------------"
 echo "berhasil membuat cronjob untuk otomisasi renew certificate.."
 crontab -l
 
@@ -115,6 +119,7 @@ case $OS in
           fi
           ;;
         "firewalld")
+          echo "-------------------------------"
           echo "mengaktifkan kembali firewall.."
           if systemctl start firewalld; then
             echo "berhasil mengaktifkan firewall.."
