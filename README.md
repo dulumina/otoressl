@@ -1,4 +1,4 @@
-# Automatic Renew Certificate | OTORESSL
+# Automatic Renew Certificate | otoressl
 
 This tools for create cronjob for automaic renew certificate
 
@@ -65,10 +65,10 @@ example
 ```
 
 ## Tested
-[x] CentOS 7
-[ ] CentOS 8
-[ ] Ubuntu
-[ ] Arch
+- [x] CentOS 7
+- [ ] CentOS 8
+- [ ] Ubuntu
+- [ ] Arch
 
 ## Copyright
 Copyright belongs to Allah
