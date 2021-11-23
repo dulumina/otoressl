@@ -1,6 +1,62 @@
 #!/bin/bash
 OS=$(hostnamectl | grep "Operating System" | awk '{print $3}')
+certbot=$(which certbot)
+if [[ $certbot == "" ]]; then
+  echo "---------------------------------------------------------------------------------------------------"
+  echo "certbot not installed, make sure you have configured ssl using certbot before you using this tool.."
+  echo "certbot belum terinstall, pastikan anda sudah pernah mengkonfigurasi/menginstall ssl menggunakan certbot sebelum menggunakan tool ini.."
+  echo "exiting.."
+  exit 1
+fi
 validDay=$(certbot certificates | grep Expiry | awk '{print $6}')
+
+case $OS in
+  "CentOS")
+    if [[ $1 == "--disable-firewall" ]]; then
+      case $2 in
+        "iptables")
+          echo "--------------------------"
+          echo "menon-aktifkan firewall.."
+          if systemctl stop iptables; then
+            echo "berhasil menon-aktifkan firewall.."
+          fi
+          ;;
+        "firewalld")
+          echo "--------------------------"
+          echo "menon-aktifkan firewall.."
+          if systemctl stop firewalld; then
+            echo "berhasil menon-aktifkan firewall.."
+          fi
+          ;;
+      esac
+    fi
+    ;;
+  *)
+    if [[ $1 == "--disable-firewall" ]]; then
+      case $2 in
+        "iptables")
+          if [[ ! -d /etc/sysconfig ]]; then
+            mkdir /etc/sysconfig
+          fi
+          echo "--------------------------"
+          echo "menon-aktifkan firewall.."
+          if iptables-save > /etc/sysconfig/iptables; then
+            if iptables -F; then
+              echo "berhasil menon-aktifkan firewall.."
+            fi
+          fi
+          ;;
+        "firewalld")
+          echo "--------------------------"
+          echo "menon-aktifkan firewall.."
+          if systemctl stop firewalld; then
+            echo "berhasil menon-aktifkan firewall.."
+          fi
+          ;;
+      esac
+    fi
+    ;;
+esac
 
 echo "----------------------------------------"
 echo "Mengecek tanggal expire sertifikat ssl.."
@@ -15,33 +71,6 @@ Renewing certificate..
   fi
 
   echo "Renewing certificate.."
-
-  case $OS in
-    "Arch")
-      ;;
-    "Ubuntu")
-      ;;
-    "CentOS")
-      if [[ $1 == "--disable-firewall" ]]; then
-        case $2 in
-          "iptables")
-            echo "--------------------------"
-            echo "menon-aktifkan firewall.."
-            if systemctl stop iptables; then
-              echo "berhasil menon-aktifkan firewall.."
-            fi
-            ;;
-          "firewalld")
-            echo "--------------------------"
-            echo "menon-aktifkan firewall.."
-            if systemctl stop firewalld; then
-              echo "berhasil menon-aktifkan firewall.."
-            fi
-            ;;
-        esac
-      fi
-      ;;
-  esac
 
   if $(which certbot) renew; then
     if [[ $TOKEN_BOT_TELEGRAM && $ID_BOT_TELEGRAM != "" ]]; then
@@ -92,6 +121,20 @@ renewDay="$(($validDay - 10))"
 month=$(date --date="+$renewDay days" +%-m)
 day=$(date --date="+$renewDay days" +%-d)
 
+if [[ $1 == "--disable-firewall" ]]; then
+  case $2 in
+    "iptables")
+      { crontab -l; echo "0 9 $day $month * source $(pwd)/otoressl --disable-firewall iptables"; } | crontab -
+      ;;
+    "firewalld")
+      { crontab -l; echo "0 9 $day $month * source $(pwd)/otoressl --disable-firewall firewalld"; } | crontab -
+      ;;
+    *)
+      { crontab -l; echo "0 9 $day $month * source $(pwd)/otoressl"; } | crontab -
+      ;;
+  esac
+fi
+  
 { crontab -l; echo "0 9 $day $month * source $(pwd)/otoressl"; } | crontab -
 
 if [[ $TOKEN_BOT_TELEGRAM && $ID_BOT_TELEGRAM != "" ]]; then
@@ -105,10 +148,6 @@ echo "berhasil membuat cronjob untuk otomisasi renew certificate.."
 crontab -l
 
 case $OS in
-  "Arch")
-    ;;
-  "Ubuntu")
-    ;;
   "CentOS")
     if [[ $1 == "--disable-firewall" ]]; then
       case $2 in
@@ -128,5 +167,27 @@ case $OS in
       esac
     fi
     ;;
+  *)
+    if [[ $1 == "--disable-firewall" ]]; then
+      case $2 in
+        "iptables")
+          if [[ ! -d /etc/sysconfig ]]; then
+            mkdir /etc/sysconfig
+          fi
+          echo "--------------------------"
+          echo "mengaktifkan firewall.."
+          if iptables-restore < /etc/sysconfig/iptables; then
+            echo "berhasil mengaktifkan firewall.."
+          fi
+          ;;
+        "firewalld")
+          echo "--------------------------"
+          echo "mengaktifkan firewall.."
+          if systemctl start firewalld; then
+            echo "berhasil mengaktifkan firewall.."
+          fi
+          ;;
+      esac
+    fi
+    ;;
 esac
-
