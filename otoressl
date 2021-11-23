@@ -1,19 +1,26 @@
 #!/bin/bash
+echo ""
+echo "Mengecek tanggal expire sertifikat ssl.."
 source ./config
 
 validDay=$(certbot certificates | grep Expiry | awk '{print $6}')
 if [[ $validDay < 30 ]]; then
+  if [[ $TOKEN_BOT_TELEGRAM && $ID_BOT_TELEGRAM != "" ]]; then
   curl -s -X POST https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage -d chat_id=${ID_BOT_TELEGRAM} -d text="NOTIF SSL @$(cat /etc/hostname)
 
 Renewing certificate..
 "
+  fi
+
   echo "Renewing certificate.."
   if $(which certbot) renew; then
-    curl -s -X POST https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage -d chat_id=${ID_BOT_TELEGRAM} -d text="NOTIF SSL
+    if [[ $TOKEN_BOT_TELEGRAM && $ID_BOT_TELEGRAM != "" ]]; then
+    curl -s -X POST https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage -d chat_id=${ID_BOT_TELEGRAM} -d text="NOTIF SSL $(cat /etc/hostname)
 
 Success! certificate renewed..
 menghitung hari untuk dibuatkan cronjob/automatic renew certificate...
 "
+    fi
 
     echo "Success! certificate renewed..
 menghitung hari untuk dibuatkan cronjob/automatic renew certificate...
@@ -21,7 +28,6 @@ menghitung hari untuk dibuatkan cronjob/automatic renew certificate...
   fi
 else
   echo "belum memasuki waktu yang pas untuk renew certificate..."
-  echo ""
   echo "menghitung hari untuk dibuatkan cronjob/automatic renew certificate..."
 fi
 
@@ -47,7 +53,7 @@ if [[ $isCrontab == "" ]]; then
   
 fi
 
-crontab -l | sed 's/.*certbot.*//' | crontab -
+crontab -l | sed 's/.*otoressl.*//' | crontab -
 crontab -l | sed '/^$/d'| crontab -
 
 renewDay="$(($validDay - 10))"
@@ -56,5 +62,13 @@ month=$(date --date="+$renewDay days" +%-m)
 day=$(date --date="+$renewDay days" +%-d)
 
 { crontab -l; echo "0 9 $day $month * source $(pwd)/otoressl"; } | crontab -
+
+if [[ $TOKEN_BOT_TELEGRAM && $ID_BOT_TELEGRAM != "" ]]; then
+  curl -s -X POST https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage -d chat_id=${ID_BOT_TELEGRAM} -d text="NOTIF SSL $(cat /etc/hostname)
+
+berhasil membuat cronjob untuk otomisasi renew certificate..
+"
+fi
 echo ""
 echo "berhasil membuat cronjob untuk otomisasi renew certificate.."
+crontab -l
