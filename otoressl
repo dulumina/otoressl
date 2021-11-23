@@ -22,8 +22,8 @@ Renewing certificate..
     "Ubuntu")
       ;;
     "CentOS")
-      if [[ $2 == "--disable-firewall" ]]; then
-        case $3 in
+      if [[ $1 == "--disable-firewall" ]]; then
+        case $2 in
           "iptables")
             echo "menon-aktifkan firewall.."
             if systemctl stop iptables; then
@@ -75,16 +75,6 @@ if [[ $isCrontab == "" ]]; then
     "CentOS")
       yum update && yum install cronie
       systemctl enable --now cronie
-      if [[ $2 == "--disable-firewall" ]]; then
-        case $3 in
-          "iptables")
-            systemctl stop firewalld
-            ;;
-          "firewalld")
-            systemctl stop firewalld
-            ;;
-        esac
-      fi
       ;;
   esac
   
@@ -116,8 +106,8 @@ case $OS in
   "Ubuntu")
     ;;
   "CentOS")
-    if [[ $2 == "--disable-firewall" ]]; then
-      case $3 in
+    if [[ $1 == "--disable-firewall" ]]; then
+      case $2 in
         "iptables")
           echo "mengaktifkan kembali firewall.."
           if systemctl start iptables; then
