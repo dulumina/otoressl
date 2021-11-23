@@ -9,7 +9,7 @@ if [[ $validDay < 30 ]]; then
   curl -s -X POST https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage -d chat_id=${ID_BOT_TELEGRAM} -d text="NOTIF SSL @$(cat /etc/hostname)
 
 Renewing certificate..
-"
+" &>/dev/null &
   fi
 
   echo "Renewing certificate.."
@@ -19,7 +19,7 @@ Renewing certificate..
 
 Success! certificate renewed..
 menghitung hari untuk dibuatkan cronjob/automatic renew certificate...
-"
+" &>/dev/null &
     fi
 
     echo "Success! certificate renewed..
@@ -67,7 +67,7 @@ if [[ $TOKEN_BOT_TELEGRAM && $ID_BOT_TELEGRAM != "" ]]; then
   curl -s -X POST https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage -d chat_id=${ID_BOT_TELEGRAM} -d text="NOTIF SSL $(cat /etc/hostname)
 
 berhasil membuat cronjob untuk otomisasi renew certificate..
-"
+" &>/dev/null &
 fi
 echo ""
 echo "berhasil membuat cronjob untuk otomisasi renew certificate.."
