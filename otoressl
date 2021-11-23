@@ -20,7 +20,8 @@ menghitung hari untuk dibuatkan cronjob/automatic renew certificate...
 "
   fi
 else
-  echo "belum memasuki waktu yang pas untuk renew certificate"
+  echo "belum memasuki waktu yang pas untuk renew certificate..."
+  echo ""
   echo "menghitung hari untuk dibuatkan cronjob/automatic renew certificate..."
 fi
 
@@ -55,3 +56,5 @@ month=$(date --date="+$renewDay days" +%-m)
 day=$(date --date="+$renewDay days" +%-d)
 
 { crontab -l; echo "0 9 $day $month * source $(pwd)/otoressl"; } | crontab -
+echo ""
+echo "berhasil membuat cronjob untuk otomisasi renew certificate.."
