@@ -155,8 +155,8 @@ if [[ $isCrontab == "" ]]; then
       systemctl enable --now cron
       ;;
     "CentOS")
-      yum update && yum install cronie
-      systemctl enable --now cronie
+      yum update && yum install crond
+      systemctl enable --now crond
       ;;
   esac
 else
@@ -180,7 +180,7 @@ else
       fi
       ;;
     "CentOS")
-      if ! systemctl start cronie; then
+      if ! systemctl start crond; then
         echo "---------------------------------"
         echo "cronjob service failed to start.."
         echo "exiting.."
@@ -207,10 +207,9 @@ if [[ $1 == "--disable-firewall" ]]; then
     "firewalld")
       { crontab -l; echo "0 9 $day $month * source $(pwd)/otoressl --disable-firewall firewalld"; } | crontab -
       ;;
-    *)
-      { crontab -l; echo "0 9 $day $month * source $(pwd)/otoressl"; } | crontab -
-      ;;
   esac
+else
+  { crontab -l; echo "0 9 $day $month * source $(pwd)/otoressl"; } | crontab -
 fi
 
 if [[ $TOKEN_BOT_TELEGRAM && $ID_BOT_TELEGRAM != "" ]]; then
