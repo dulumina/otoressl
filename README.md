@@ -14,8 +14,7 @@ cronie
 ```
 git clone https://github.com/deadlyug/otoressl.git
 cd otoressl
-chmod +x otoressl
-chmod +x config
+chmod +x otoressl config
 ```
 
 ## Configuring
@@ -25,6 +24,8 @@ TOKEN_BOT_TELEGRAM="<your-random-bot-token-here>" # BOT TOKEN
 ID_BOT_TELEGRAM="<your-chat-id-or-group-id-here" # Chat ID
 ```
 For UNTAD admin, you can download this [config](https://nextcloud.cloud.untad.ac.id/s/fjkwPifkxSFmT3L). 
+
+> dont forget to make the config executable by running `chmod +x config`
 
 ## Using
 > Make sure you have configured and installed ssl certificate on target host using certbot
