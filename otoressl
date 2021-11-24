@@ -10,6 +10,55 @@ if [[ $certbot == "" ]]; then
 fi
 validDay=$(certbot certificates | grep Expiry | awk '{print $6}')
 
+function startFirewall() {
+
+case $OS in
+  "CentOS")
+    if [[ $1 == "--disable-firewall" ]]; then
+      case $2 in
+        "iptables")
+          echo "mengaktifkan kembali firewall.."
+          if systemctl start iptables; then
+            echo "berhasil mengaktifkan firewall.."
+          fi
+          ;;
+        "firewalld")
+          echo "-------------------------------"
+          echo "mengaktifkan kembali firewall.."
+          if systemctl start firewalld; then
+            echo "berhasil mengaktifkan firewall.."
+          fi
+          ;;
+      esac
+    fi
+    ;;
+  *)
+    if [[ $1 == "--disable-firewall" ]]; then
+      case $2 in
+        "iptables")
+          if [[ ! -d /etc/sysconfig ]]; then
+            mkdir /etc/sysconfig
+          fi
+          echo "--------------------------"
+          echo "mengaktifkan firewall.."
+          if iptables-restore < /etc/sysconfig/iptables; then
+            echo "berhasil mengaktifkan firewall.."
+          fi
+          ;;
+        "firewalld")
+          echo "--------------------------"
+          echo "mengaktifkan firewall.."
+          if systemctl start firewalld; then
+            echo "berhasil mengaktifkan firewall.."
+          fi
+          ;;
+      esac
+    fi
+    ;;
+esac
+
+}
+
 case $OS in
   "CentOS")
     if [[ $1 == "--disable-firewall" ]]; then
@@ -110,7 +159,36 @@ if [[ $isCrontab == "" ]]; then
       systemctl enable --now cronie
       ;;
   esac
-  
+else
+  case $OS in
+    "Arch")
+      if ! systemctl start cronie; then
+        echo "---------------------------------"
+        echo "cronjob service failed to start.."
+        echo "exiting.."
+        startFirewall
+        exit 1
+      fi
+      ;;
+    "Ubuntu")
+      if ! systemctl start cron; then
+        echo "---------------------------------"
+        echo "cronjob service failed to start.."
+        echo "exiting.."
+        startFirewall
+        exit 1
+      fi
+      ;;
+    "CentOS")
+      if ! systemctl start cronie; then
+        echo "---------------------------------"
+        echo "cronjob service failed to start.."
+        echo "exiting.."
+        startFirewall
+        exit 1
+      fi
+      ;;
+  esac
 fi
 
 crontab -l | sed 's/.*otoressl.*//' | crontab -
@@ -134,8 +212,6 @@ if [[ $1 == "--disable-firewall" ]]; then
       ;;
   esac
 fi
-  
-{ crontab -l; echo "0 9 $day $month * source $(pwd)/otoressl"; } | crontab -
 
 if [[ $TOKEN_BOT_TELEGRAM && $ID_BOT_TELEGRAM != "" ]]; then
   curl -s -X POST https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage -d chat_id=${ID_BOT_TELEGRAM} -d text="NOTIF SSL $(cat /etc/hostname)
@@ -146,48 +222,4 @@ fi
 echo "------------------------------------------------------------"
 echo "berhasil membuat cronjob untuk otomisasi renew certificate.."
 crontab -l
-
-case $OS in
-  "CentOS")
-    if [[ $1 == "--disable-firewall" ]]; then
-      case $2 in
-        "iptables")
-          echo "mengaktifkan kembali firewall.."
-          if systemctl start iptables; then
-            echo "berhasil mengaktifkan firewall.."
-          fi
-          ;;
-        "firewalld")
-          echo "-------------------------------"
-          echo "mengaktifkan kembali firewall.."
-          if systemctl start firewalld; then
-            echo "berhasil mengaktifkan firewall.."
-          fi
-          ;;
-      esac
-    fi
-    ;;
-  *)
-    if [[ $1 == "--disable-firewall" ]]; then
-      case $2 in
-        "iptables")
-          if [[ ! -d /etc/sysconfig ]]; then
-            mkdir /etc/sysconfig
-          fi
-          echo "--------------------------"
-          echo "mengaktifkan firewall.."
-          if iptables-restore < /etc/sysconfig/iptables; then
-            echo "berhasil mengaktifkan firewall.."
-          fi
-          ;;
-        "firewalld")
-          echo "--------------------------"
-          echo "mengaktifkan firewall.."
-          if systemctl start firewalld; then
-            echo "berhasil mengaktifkan firewall.."
-          fi
-          ;;
-      esac
-    fi
-    ;;
-esac
+startFirewall
