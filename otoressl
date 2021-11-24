@@ -10,12 +10,14 @@ if [[ $certbot == "" ]]; then
 fi
 validDay=$(certbot certificates | grep Expiry | awk '{print $6}')
 
+option1=$1
+firewall=$2
 function startFirewall() {
 
 case $OS in
   "CentOS")
-    if [[ $1 == "--disable-firewall" ]]; then
-      case $2 in
+    if [[ $option1 == "--disable-firewall" ]]; then
+      case $firewall in
         "iptables")
           echo "mengaktifkan kembali firewall.."
           if systemctl start iptables; then
@@ -33,8 +35,8 @@ case $OS in
     fi
     ;;
   *)
-    if [[ $1 == "--disable-firewall" ]]; then
-      case $2 in
+    if [[ $option1 == "--disable-firewall" ]]; then
+      case $firewall in
         "iptables")
           if [[ ! -d /etc/sysconfig ]]; then
             mkdir /etc/sysconfig
