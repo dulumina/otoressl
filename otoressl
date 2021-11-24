@@ -115,21 +115,31 @@ source ./config
 
 if [[ $validDay < 30 ]]; then
   if [[ $TOKEN_BOT_TELEGRAM && $ID_BOT_TELEGRAM != "" ]]; then
-  curl -s -X POST https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage -d chat_id=${ID_BOT_TELEGRAM} -d text="NOTIF SSL @$(cat /etc/hostname)
+    if [[ -f ./send-notify ]]; then
+      ./send-notify "Renewing certificate.."
+    else
+      curl -s -X POST https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage -d chat_id=${ID_BOT_TELEGRAM} -d text="NOTIF SSL @$(cat /etc/hostname)
 
 Renewing certificate..
 " &>/dev/null &
+    fi
   fi
 
   echo "Renewing certificate.."
 
   if $(which certbot) renew; then
     if [[ $TOKEN_BOT_TELEGRAM && $ID_BOT_TELEGRAM != "" ]]; then
-    curl -s -X POST https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage -d chat_id=${ID_BOT_TELEGRAM} -d text="NOTIF SSL $(cat /etc/hostname)
+       if [[ -f ./send-notify ]]; then
+          ./send-notify "Success! certificate renewed..
+menghitung hari untuk dibuatkan cronjob/automatic renew certificate...
+"
+        else
+          curl -s -X POST https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage -d chat_id=${ID_BOT_TELEGRAM} -d text="NOTIF SSL $(cat /etc/hostname)
 
 Success! certificate renewed..
 menghitung hari untuk dibuatkan cronjob/automatic renew certificate...
 " &>/dev/null &
+       fi
     fi
 
     echo "-----------------------------"
@@ -215,10 +225,14 @@ else
 fi
 
 if [[ $TOKEN_BOT_TELEGRAM && $ID_BOT_TELEGRAM != "" ]]; then
-  curl -s -X POST https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage -d chat_id=${ID_BOT_TELEGRAM} -d text="NOTIF SSL $(cat /etc/hostname)
+  if [[ -f ./send-notify ]]; then
+     ./send-notify "berhasil membuat cronjob untuk otomisasi renew certificate.."
+  else
+     curl -s -X POST https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage -d chat_id=${ID_BOT_TELEGRAM} -d text="NOTIF SSL $(cat /etc/hostname)
 
 berhasil membuat cronjob untuk otomisasi renew certificate..
 " &>/dev/null &
+  fi
 fi
 echo "------------------------------------------------------------"
 echo "berhasil membuat cronjob untuk otomisasi renew certificate.."
