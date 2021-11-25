@@ -274,14 +274,14 @@ day=$(date --date="+$renewDay days" +%-d)
 if [[ $1 == "--disable-firewall" ]]; then
   case $2 in
     "iptables")
-      { crontab -l; echo "0 9 $day $month * source $(pwd)/otoressl --disable-firewall iptables"; } | crontab -
+      { crontab -l; echo "0 9 $day $month * $(which bash) $(pwd)/otoressl --disable-firewall iptables"; } | crontab -
       ;;
     "firewalld")
-      { crontab -l; echo "0 9 $day $month * source $(pwd)/otoressl --disable-firewall firewalld"; } | crontab -
+      { crontab -l; echo "0 9 $day $month * $(which bash) $(pwd)/otoressl --disable-firewall firewalld"; } | crontab -
       ;;
   esac
 else
-  { crontab -l; echo "0 9 $day $month * source $(pwd)/otoressl"; } | crontab -
+  { crontab -l; echo "0 9 $day $month * $(which bash) $(pwd)/otoressl"; } | crontab -
 fi
 
 if [[ -f ./send-notify ]]; then
