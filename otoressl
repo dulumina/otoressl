@@ -22,6 +22,7 @@ case $OS in
     if [[ $option1 == "--disable-firewall" ]]; then
       case $firewall in
         "iptables")
+          echo "-------------------------------"
           echo "mengaktifkan kembali firewall.."
           if systemctl start iptables; then
             echo "berhasil mengaktifkan firewall.."
