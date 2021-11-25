@@ -1,4 +1,7 @@
 #!/bin/bash
+# Change directory to directory of the script
+cd "$(dirname "$0")"
+
 OS=$(hostnamectl | grep "Operating System" | awk '{print $3}')
 certbot=$(which certbot)
 if [[ $certbot == "" ]]; then
