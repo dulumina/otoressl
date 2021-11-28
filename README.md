@@ -37,7 +37,7 @@ dont forget to make the script executable by running `chmod +x send-notify`
 ```
 certbot certificates
 ```
-> if there are same expire time you. good to go, if not. make sure the different beetween expire time at least lest than 10 days.
+> if each of virtual host have same expire time. it's okay to continue, if not. make sure the difference between expire time at least less than 10 days.
 
 - run the script
 
