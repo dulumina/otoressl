@@ -32,9 +32,14 @@ dont forget to make the script executable by running `chmod +x send-notify`
 > make sure place send-notify script in same forder with otoressl script
 
 ## Using
-Make sure you already configured and installed ssl certificate on target host using certbot
+- Make sure you already configured and installed ssl certificate on target host using certbot
+- Check expire time for each host if have multiple virtual host at the same server
+```
+certbot certificates
+```
+> if there are same expire time you. good to go, if not. make sure the different beetween expire time at least lest than 10 days.
 
-run the script
+- run the script
 
 ```
 ./otoressl
@@ -52,7 +57,7 @@ or
 bash otoressl
 ```
 
-if you want to temporary disable firewall during the renewing, you can pass option like this 
+- if you want to temporary disable firewall during the renewing, you can pass option like this 
 
 ```
 ./otoressl --disable-firewall <firewall service>
