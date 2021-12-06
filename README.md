@@ -42,7 +42,7 @@ certbot certificates
 - run the script
 
 ```
-./otoressl
+./otoressl <web-server-service>
 ```
 
 or
@@ -55,6 +55,18 @@ or
 
 ```
 bash otoressl
+```
+
+example
+
+```
+./otoressl nginx
+```
+
+or
+
+```
+./otoressl httpd
 ```
 
 - if you want to temporary disable firewall during the renewing, you can pass option like this 
