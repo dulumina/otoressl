@@ -45,18 +45,6 @@ certbot certificates
 ./otoressl <web-server-service>
 ```
 
-or
-
-```
-source otoressl
-```
-
-or
-
-```
-bash otoressl
-```
-
 example
 
 ```
