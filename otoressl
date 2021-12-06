@@ -117,7 +117,7 @@ echo "----------------------------------------"
 echo "Mengecek tanggal expire sertifikat ssl.."
 source ./config
 
-if [[ $validDay < 30 ]]; then
+if [[ $validDay < 30 ]] || echo $validDay | grep EXPIRED; then
 
   if [[ -f ./send-notify ]]; then
     ./send-notify "Renewing certificate.."
