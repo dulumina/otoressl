@@ -2,7 +2,7 @@
 # Change directory to directory of the script
 cd "$(dirname "$0")"
 
-if [[ ! $1 == "nginx" ]] || [[ ! $1 == "httpd" ]]; then
+if [[ $1 != "nginx" ]] || [[ $1 != "httpd" ]]; then
   echo "-----"
   echo "Error"
   echo "you must specify web server service to tell script to auto restart web server that you have been chosen.."
