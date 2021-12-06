@@ -79,11 +79,11 @@ example
 
 - using iptables
 ```
-./otoressl --disable-firewall nginx iptables
+./otoressl nginx --disable-firewall iptables
 ```
 - using firewalld 
 ```
-./otoressl --disable-firewall httpd firewalld
+./otoressl httpd --disable-firewall firewalld
 ```
 
 ## Tested
