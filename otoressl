@@ -2,12 +2,14 @@
 # Change directory to directory of the script
 cd "$(dirname "$0")"
 
-if [[ $1 != "nginx" ]] || [[ $1 != "httpd" ]]; then
-  echo "-----"
-  echo "Error"
-  echo "you must specify web server service to tell script to auto restart web server that you have been chosen.."
-  echo "example: ./otoressl nginx or ./otoressl httpd"
-  exit 1
+if [[ $1 != "nginx" ]]; then
+  if [[ $1 != "httpd" ]]; then
+    echo "-----"
+    echo "Error"
+    echo "you must specify web server service to tell script to auto restart web server that you have been chosen.."
+    echo "example: ./otoressl nginx or ./otoressl httpd"
+    exit 1
+  fi
 fi
 
 OS=$(hostnamectl | grep "Operating System" | awk '{print $3}')
