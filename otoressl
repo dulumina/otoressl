@@ -14,7 +14,7 @@ while (( "$#" )); do
       ;;
     -w|--restart-webmin)
         RESTART_WEBMIN=true
-        shift 2
+      shift 
       ;;
     -f|--disable-firewall)
       if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
@@ -78,7 +78,6 @@ cd "$(dirname "$0")"
 
 OS=$(hostnamectl | grep "Operating System" | awk '{print $3}')
 certbot=$(which certbot)
-validDay=$(certbot certificates | grep Expiry | awk 'FNR==1 {print $6}')
 
 if [[ $WEB_SERVER != "nginx" ]]; then
   if [[ $WEB_SERVER != "apache" ]]; then
@@ -284,7 +283,7 @@ do
   fi
 done
 
-
+validDay=$(certbot certificates | grep Expiry | awk 'FNR==1 {print $6}')
 echo "----------------------------------------"
 echo "Mengecek tanggal expire sertifikat ssl.."
 source /etc/otoressl/config
