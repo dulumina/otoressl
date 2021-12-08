@@ -6,7 +6,6 @@ while (( "$#" )); do
   case "$1" in
     nginx)
       WEB_SERVER="nginx"
-      1="nginx"
       shift
       ;;
     apache)
