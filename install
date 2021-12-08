@@ -11,7 +11,9 @@ echo "installing otoressl.."
 echo ""
 
 ## Create otoressl dir
-mkdir /etc/otoressl
+if [[ ! -d /etc/otoressl ]]; then
+  mkdir /etc/otoressl
+fi
 
 ## Download config
 curl -o /etc/otoressl/config https://raw.githubusercontent.com/deadlyug/otoressl/main/config
