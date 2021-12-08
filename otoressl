@@ -258,6 +258,7 @@ fi
 
 certbot certificates
 
+echo ""
 echo "---------------------------------------------------------------------------------------------"
 echo "- Make sure you already configured and installed ssl certificate on target host using certbot
 - Check expire time for each host if have multiple virtual host at the same server
@@ -271,7 +272,7 @@ echo "- Make sure you already configured and installed ssl certificate on target
 while true
 do
   echo    "-----------------------------"
-  read -p "Are sure to continue? (y/n) : " INSTALL
+  read -p "Are you sure to continue? (y/n) : " INSTALL
   if [[ $INSTALL != "n" ]]; then
     if [[ $INSTALL != "y" ]]; then
       echo you have to write y or n
@@ -283,6 +284,7 @@ do
   fi
 done
 
+echo ""
 validDay=$(certbot certificates | grep Expiry | awk 'FNR==1 {print $6}')
 echo "----------------------------------------"
 echo "Mengecek tanggal expire sertifikat ssl.."
@@ -509,4 +511,7 @@ berhasil membuat cronjob untuk otomisasi renew certificate..
 fi
 echo "------------------------------------------------------------"
 echo "berhasil membuat cronjob untuk otomisasi renew certificate.."
+echo "------------"
+echo "Cronjob List"
+echo ""
 crontab -l
