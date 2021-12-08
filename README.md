@@ -9,12 +9,12 @@ cronie
 
 ## Installing
 ```
-curl -s https://raw.githubusercontent.com/deadlyug/otoressl/main/install | bash
+curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.0/install | bash
 ```
 
 #### FOR UNTAD Admin
 ```
-curl -s https://raw.githubusercontent.com/deadlyug/otoressl/main/install-untad-admin | bash
+curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.0/install-untad-admin | bash
 ```
 
 ## Configuring
@@ -78,7 +78,7 @@ otoressl <web-server-service> --disable-firewall <firewall-service> --restart-we
 ## Tested
 - [x] CentOS 7
 - [ ] CentOS 8
-- [ ] Ubuntu
+- [x] Ubuntu 20.04
 - [ ] Arch
 
 ## Copyright

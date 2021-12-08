@@ -457,24 +457,24 @@ case $WEB_SERVER in
         case $FIREWALL in
           "iptables")
             if [[ $RESTART_WEBMIN ]]; then
-              { crontab -l; echo "0 9 $day $month * $(which bash) $(which otoressl) nginx --disable-firewall iptables --restart-webmin"; } | crontab -
+              { crontab -l; echo "0 9 $day $month * $(which otoressl) nginx --disable-firewall iptables --restart-webmin"; } | crontab -
               else
-              { crontab -l; echo "0 9 $day $month * $(which bash) $(which otoressl) nginx --disable-firewall iptables"; } | crontab -
+              { crontab -l; echo "0 9 $day $month * $(which otoressl) nginx --disable-firewall iptables"; } | crontab -
             fi
             ;;
           "firewalld")
             if [[ $RESTART_WEBMIN ]]; then
-              { crontab -l; echo "0 9 $day $month * $(which bash) $(which otoressl) nginx --disable-firewall firewalld --restart-webmin"; } | crontab -
+              { crontab -l; echo "0 9 $day $month * $(which otoressl) nginx --disable-firewall firewalld --restart-webmin"; } | crontab -
             else
-              { crontab -l; echo "0 9 $day $month * $(which bash) $(which otoressl) nginx --disable-firewall firewalld"; } | crontab -
+              { crontab -l; echo "0 9 $day $month * $(which otoressl) nginx --disable-firewall firewalld"; } | crontab -
             fi
             ;;
         esac
       else
         if [[ $RESTART_WEBMIN ]]; then
-          { crontab -l; echo "0 9 $day $month * $(which bash) $(which otoressl) nginx --restart-webmin"; } | crontab -
+          { crontab -l; echo "0 9 $day $month * $(which otoressl) nginx --restart-webmin"; } | crontab -
         else
-          { crontab -l; echo "0 9 $day $month * $(which bash) $(which otoressl) nginx"; } | crontab -
+          { crontab -l; echo "0 9 $day $month * $(which otoressl) nginx"; } | crontab -
         fi
       fi
     ;;
@@ -483,24 +483,24 @@ case $WEB_SERVER in
         case $FIREWALL in
           "iptables")
             if [[ $RESTART_WEBMIN ]]; then
-              { crontab -l; echo "0 9 $day $month * $(which bash) $(which otoressl) apache --disable-firewall iptables --restart-webmin"; } | crontab -
+              { crontab -l; echo "0 9 $day $month * $(which otoressl) apache --disable-firewall iptables --restart-webmin"; } | crontab -
               else
-              { crontab -l; echo "0 9 $day $month * $(which bash) $(which otoressl) apache --disable-firewall iptables"; } | crontab -
+              { crontab -l; echo "0 9 $day $month * $(which otoressl) apache --disable-firewall iptables"; } | crontab -
             fi
             ;;
           "firewalld")
             if [[ $RESTART_WEBMIN ]]; then
-              { crontab -l; echo "0 9 $day $month * $(which bash) $(which otoressl) apache --disable-firewall firewalld --restart-webmin"; } | crontab -
+              { crontab -l; echo "0 9 $day $month * $(which otoressl) apache --disable-firewall firewalld --restart-webmin"; } | crontab -
             else
-              { crontab -l; echo "0 9 $day $month * $(which bash) $(which otoressl) apache --disable-firewall firewalld"; } | crontab -
+              { crontab -l; echo "0 9 $day $month * $(which otoressl) apache --disable-firewall firewalld"; } | crontab -
             fi
             ;;
         esac
       else
         if [[ $RESTART_WEBMIN ]]; then
-          { crontab -l; echo "0 9 $day $month * $(which bash) $(which otoressl) apache --restart-webmin"; } | crontab -
+          { crontab -l; echo "0 9 $day $month * $(which otoressl) apache --restart-webmin"; } | crontab -
         else
-          { crontab -l; echo "0 9 $day $month * $(which bash) $(which otoressl) apache"; } | crontab -
+          { crontab -l; echo "0 9 $day $month * $(which otoressl) apache"; } | crontab -
         fi
       fi
     ;;
