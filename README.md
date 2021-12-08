@@ -8,15 +8,14 @@ certbot
 cronie
 
 ## Installing
-- Download or clone this repo
-- Give execute permition to script
-
 ```
 curl -s https://raw.githubusercontent.com/deadlyug/otoressl/main/install | bash
 ```
 
-### FOR UNTAD Admin
+#### FOR UNTAD Admin
+```
 curl -s https://raw.githubusercontent.com/deadlyug/otoressl/main/install-untad-admin | bash
+```
 
 ## Configuring
 Insert your Telegram bot token and chat id to config file
@@ -28,7 +27,7 @@ ID_BOT_TELEGRAM="<your-chat-id-or-group-id-here" # Chat ID
 You dont need to configure config file. 
 
 ## Using
-- run the script
+run the script
 
 ```
 otoressl <web-server-service>
@@ -46,7 +45,7 @@ or
 otoressl httpd
 ```
 
-- if you want to temporary disable firewall during the renewing, you can pass option like this 
+if you want to temporary disable firewall during the renewing, you can pass option like this 
 
 ```
 otoressl <web-server-service> --disable-firewall <firewall-service>
@@ -56,14 +55,14 @@ example
 
 - using iptables
 ```
-./otoressl nginx --disable-firewall iptables
+otoressl nginx --disable-firewall iptables
 ```
 - using firewalld 
 ```
-./otoressl httpd --disable-firewall firewalld
+otoressl httpd --disable-firewall firewalld
 ```
 
-- if you want to restart webmin after renew certificate
+if you want to restart webmin after renew certificate
 
 
 ```
