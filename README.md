@@ -12,10 +12,11 @@ cronie
 - Give execute permition to script
 
 ```
-git clone https://github.com/deadlyug/otoressl.git
-cd otoressl
-chmod +x otoressl config
+curl -s https://raw.githubusercontent.com/deadlyug/otoressl/main/install | bash
 ```
+
+### FOR UNTAD Admin
+curl -s https://raw.githubusercontent.com/deadlyug/otoressl/main/install-untad-admin | bash
 
 ## Configuring
 Insert your Telegram bot token and chat id to config file
@@ -24,43 +25,31 @@ TOKEN_BOT_TELEGRAM="<your-random-bot-token-here>" # BOT TOKEN
 ID_BOT_TELEGRAM="<your-chat-id-or-group-id-here" # Chat ID
 ```
 #### For UNTAD Admin 
-You dont need to configure config file, just download this file with wget command
-```
-wget https://nextcloud.cloud.untad.ac.id/s/34Hc6MsrwpC6CjF/download/send-notify --no-check-certificate
-```
-dont forget to make the script executable by running `chmod +x send-notify`
-> make sure place send-notify script in same forder with otoressl script
+You dont need to configure config file. 
 
 ## Using
-- Make sure you already configured and installed ssl certificate on target host using certbot
-- Check expire time for each host if have multiple virtual host at the same server
-```
-certbot certificates
-```
-> if each of virtual host have same expire time. it's okay to continue, if not. make sure the difference between expire time at least less than 10 days.
-
 - run the script
 
 ```
-./otoressl <web-server-service>
+otoressl <web-server-service>
 ```
 
 example
 
 ```
-./otoressl nginx
+otoressl nginx
 ```
 
 or
 
 ```
-./otoressl httpd
+otoressl httpd
 ```
 
 - if you want to temporary disable firewall during the renewing, you can pass option like this 
 
 ```
-./otoressl --disable-firewall <firewall service>
+otoressl <web-server-service> --disable-firewall <firewall-service>
 ```
 
 example
@@ -72,6 +61,19 @@ example
 - using firewalld 
 ```
 ./otoressl httpd --disable-firewall firewalld
+```
+
+- if you want to restart webmin after renew certificate
+
+
+```
+otoressl <web-server-service> --restart-webmin
+```
+
+or with disable firewall
+
+```
+otoressl <web-server-service> --disable-firewall <firewall-service> --restart-webmin
 ```
 
 ## Tested

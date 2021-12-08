@@ -1,0 +1,21 @@
+#!/bin/bash
+
+echo "-----------------"
+echo "| otoressl by UG |"
+echo "------------------------------"
+echo "| copyright belongs to Allah |"
+echo "------------------------------"
+
+echo "installing otoressl.."
+
+## Create otoressl dir
+mkdir /etc/otoressl
+
+## Download config
+curl -o /etc/otoressl/config https://raw.githubusercontent.com/deadlyug/otoressl/main/config
+
+## Download script otoressl
+curl -o /bin/otoressl https://raw.githubusercontent.com/deadlyug/otoressl/main/otoressl
+chmod +x /bin/otoressl
+
+echo "otoressl installed successfully.."
