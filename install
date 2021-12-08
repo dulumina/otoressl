@@ -7,6 +7,7 @@ echo "| copyright belongs to Allah |"
 echo "------------------------------"
 
 echo "installing otoressl.."
+echo ""
 
 ## Create otoressl dir
 mkdir /etc/otoressl
@@ -18,4 +19,5 @@ curl -o /etc/otoressl/config https://raw.githubusercontent.com/deadlyug/otoressl
 curl -o /bin/otoressl https://raw.githubusercontent.com/deadlyug/otoressl/main/otoressl
 chmod +x /bin/otoressl
 
+echo ""
 echo "otoressl installed successfully.."

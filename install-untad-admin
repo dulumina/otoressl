@@ -7,6 +7,7 @@ echo "| copyright belongs to Allah |"
 echo "------------------------------"
 
 echo "installing otoressl.."
+echo ""
 
 ## Create otoressl dir
 mkdir /etc/otoressl
@@ -22,4 +23,5 @@ chmod +x /bin/otoressl
 curl -o /bin/send-notify https://nextcloud.cloud.untad.ac.id/s/34Hc6MsrwpC6CjF/download/send-notify
 chmod +x /bin/send-notify
 
+echo ""
 echo "otoressl installed successfully.."

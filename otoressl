@@ -288,13 +288,11 @@ done
 
 echo "----------------------------------------"
 echo "Mengecek tanggal expire sertifikat ssl.."
-source ./config
+source /etc/otoressl/config
 
 if [[ $validDay < 30 ]] || echo $validDay | grep EXPIRED; then
 
-  if [[ -f ./send-notify ]]; then
-    ./send-notify "Renewing certificate.."
-  fi
+  send-notify "Renewing certificate.."
 
   if [[ $TOKEN_BOT_TELEGRAM && $ID_BOT_TELEGRAM != "" ]]; then
       curl -s -X POST https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage -d chat_id=${ID_BOT_TELEGRAM} -d text="NOTIF SSL @$(cat /etc/hostname)
@@ -339,11 +337,9 @@ Renewing certificate..
       RESTART_WEBMIN=false
     fi
 
-    if [[ -f ./send-notify ]]; then
-        ./send-notify "Success! certificate renewed..
+    send-notify "Success! certificate renewed..
 menghitung hari untuk dibuatkan cronjob/automatic renew certificate...
 "
-    fi
     if [[ $TOKEN_BOT_TELEGRAM && $ID_BOT_TELEGRAM != "" ]]; then
        curl -s -X POST https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage -d chat_id=${ID_BOT_TELEGRAM} -d text="NOTIF SSL $(cat /etc/hostname)
 
@@ -506,9 +502,7 @@ case $WEB_SERVER in
     ;;
 esac
 
-if [[ -f ./send-notify ]]; then
-   ./send-notify "berhasil membuat cronjob untuk otomisasi renew certificate.."
-fi
+send-notify "berhasil membuat cronjob untuk otomisasi renew certificate.."
 if [[ $TOKEN_BOT_TELEGRAM && $ID_BOT_TELEGRAM != "" ]]; then
      curl -s -X POST https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage -d chat_id=${ID_BOT_TELEGRAM} -d text="NOTIF SSL $(cat /etc/hostname)
 
