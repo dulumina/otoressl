@@ -12,10 +12,6 @@ while (( "$#" )); do
       WEB_SERVER="apache"
       shift
       ;;
-    -w|--restart-webmin)
-        RESTART_WEBMIN=true
-      shift 
-      ;;
     -f|--disable-firewall)
       if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
         FIREWALL=$2
@@ -29,6 +25,14 @@ while (( "$#" )); do
       echo "otoressl version 1.0"
       exit 0
       ;;
+    -w|--restart-webmin)
+      RESTART_WEBMIN=true
+      shift 
+      ;;
+    -y)
+      SKIP_CONFIRMATION=true
+      shift 
+      ;;
     -h | --help ) 
          echo "Usage: otoressl <web-server> [OPTIONS]"
          echo "WEB-SERVER includes: "
@@ -39,7 +43,9 @@ while (( "$#" )); do
          echo "   ARGUMENT includes:"
          echo "       iptables - if server use iptables"
          echo "       firewalld - if server use firewalld"
+         echo "   -v - show otoressl version"
          echo "   -w | --restart-webmin - restart webmin after renew"
+         echo "   -y - skip confirmation"
          echo "   -h | --help - displays this message"
          exit 0
       ;;
@@ -63,7 +69,9 @@ while (( "$#" )); do
          echo "   ARGUMENT includes:"
          echo "       iptables - if server use iptables"
          echo "       firewalld - if server use firewalld"
+         echo "   -v - show otoressl version"
          echo "   -w | --restart-webmin - restart webmin after renew"
+         echo "   -y - skip confirmation"
          echo "   -h | --help - displays this message"
          exit 1
      ;;
@@ -99,7 +107,9 @@ if [[ $WEB_SERVER != "nginx" ]]; then
     echo "   ARGUMENT includes:"
     echo "       iptables - if server use iptables"
     echo "       firewalld - if server use firewalld"
+    echo "   -v - show otoressl version"
     echo "   -w | --restart-webmin - restart webmin after renew"
+    echo "   -y - skip confirmation"
     echo "   -h | --help - displays this message"
     exit 1
   fi
@@ -260,33 +270,37 @@ if [[ $certbot == "" ]]; then
   exit 1
 fi
 
-certbot certificates
+if [[ ! $SKIP_CONFIRMATION ]]; then
 
-echo ""
-echo "---------------------------------------------------------------------------------------------"
-echo "- Make sure you already configured and installed ssl certificate on target host using certbot
-- Check expire time for each host if have multiple virtual host at the same server
-- if each of virtual host have same expire time. it's okay to continue, if not. make sure the difference between expire time at least less than 10 days.
------------------------------------------------------------------------------------------------
-- Pastikan anda sudah pernah menginstall dan mengkonfigurasi sertifikat ssl menggunakan certbot
-- Periksa waktu kadaluarsa sertifikat ssl jika lebih dari 1 host
-- jika waktu kadaluarsa antara virtual host sama, maka script akan berjalan lancar. jika tidak. pastikan perbedaan waktu kadaluarsa antara virtual host kurang dari 10 hari.
-"
+  certbot certificates
+  echo ""
+  echo "---------------------------------------------------------------------------------------------"
+  echo "- Make sure you already configured and installed ssl certificate on target host using certbot
+  - Check expire time for each host if have multiple virtual host at the same server
+  - if each of virtual host have same expire time. it's okay to continue, if not. make sure the difference between expire time at least less than 10 days.
+  -----------------------------------------------------------------------------------------------
+  - Pastikan anda sudah pernah menginstall dan mengkonfigurasi sertifikat ssl menggunakan certbot
+  - Periksa waktu kadaluarsa sertifikat ssl jika lebih dari 1 host
+  - jika waktu kadaluarsa antara virtual host sama, maka script akan berjalan lancar. jika tidak. pastikan perbedaan waktu kadaluarsa antara virtual host kurang dari 10 hari.
+  "
 
-while true
-do
-  echo    "-----------------------------"
-  read -p "Are you sure to continue? (y/n) : " INSTALL
-  if [[ $INSTALL != "n" ]]; then
-    if [[ $INSTALL != "y" ]]; then
-      echo you have to write y or n
+  while true
+  do
+    echo    "-----------------------------"
+    read -p "Are you sure to continue? (y/n) : " INSTALL
+    if [[ $INSTALL != "n" ]]; then
+      if [[ $INSTALL != "y" ]]; then
+        echo you have to write y or n
+      else
+        break
+      fi
     else
-      break
+      exit
     fi
-  else
-    exit
-  fi
-done
+  done
+
+fi
+
 
 echo ""
 validDay=$(certbot certificates | grep Expiry | awk 'FNR==1 {print $6}')
@@ -457,24 +471,24 @@ case $WEB_SERVER in
         case $FIREWALL in
           "iptables")
             if [[ $RESTART_WEBMIN ]]; then
-              { crontab -l; echo "0 9 $day $month * $(which otoressl) nginx --disable-firewall iptables --restart-webmin"; } | crontab -
+              { crontab -l; echo "0 9 $day $month * $(which otoressl) nginx -y --disable-firewall iptables --restart-webmin"; } | crontab -
               else
-              { crontab -l; echo "0 9 $day $month * $(which otoressl) nginx --disable-firewall iptables"; } | crontab -
+              { crontab -l; echo "0 9 $day $month * $(which otoressl) nginx -y --disable-firewall iptables"; } | crontab -
             fi
             ;;
           "firewalld")
             if [[ $RESTART_WEBMIN ]]; then
-              { crontab -l; echo "0 9 $day $month * $(which otoressl) nginx --disable-firewall firewalld --restart-webmin"; } | crontab -
+              { crontab -l; echo "0 9 $day $month * $(which otoressl) nginx -y --disable-firewall firewalld --restart-webmin"; } | crontab -
             else
-              { crontab -l; echo "0 9 $day $month * $(which otoressl) nginx --disable-firewall firewalld"; } | crontab -
+              { crontab -l; echo "0 9 $day $month * $(which otoressl) nginx -y --disable-firewall firewalld"; } | crontab -
             fi
             ;;
         esac
       else
         if [[ $RESTART_WEBMIN ]]; then
-          { crontab -l; echo "0 9 $day $month * $(which otoressl) nginx --restart-webmin"; } | crontab -
+          { crontab -l; echo "0 9 $day $month * $(which otoressl) nginx -y --restart-webmin"; } | crontab -
         else
-          { crontab -l; echo "0 9 $day $month * $(which otoressl) nginx"; } | crontab -
+          { crontab -l; echo "0 9 $day $month * $(which otoressl) nginx -y"; } | crontab -
         fi
       fi
     ;;
@@ -483,24 +497,24 @@ case $WEB_SERVER in
         case $FIREWALL in
           "iptables")
             if [[ $RESTART_WEBMIN ]]; then
-              { crontab -l; echo "0 9 $day $month * $(which otoressl) apache --disable-firewall iptables --restart-webmin"; } | crontab -
+              { crontab -l; echo "0 9 $day $month * $(which otoressl) apache -y --disable-firewall iptables --restart-webmin"; } | crontab -
               else
-              { crontab -l; echo "0 9 $day $month * $(which otoressl) apache --disable-firewall iptables"; } | crontab -
+              { crontab -l; echo "0 9 $day $month * $(which otoressl) apache -y --disable-firewall iptables"; } | crontab -
             fi
             ;;
           "firewalld")
             if [[ $RESTART_WEBMIN ]]; then
-              { crontab -l; echo "0 9 $day $month * $(which otoressl) apache --disable-firewall firewalld --restart-webmin"; } | crontab -
+              { crontab -l; echo "0 9 $day $month * $(which otoressl) apache -y --disable-firewall firewalld --restart-webmin"; } | crontab -
             else
-              { crontab -l; echo "0 9 $day $month * $(which otoressl) apache --disable-firewall firewalld"; } | crontab -
+              { crontab -l; echo "0 9 $day $month * $(which otoressl) apache -y --disable-firewall firewalld"; } | crontab -
             fi
             ;;
         esac
       else
         if [[ $RESTART_WEBMIN ]]; then
-          { crontab -l; echo "0 9 $day $month * $(which otoressl) apache --restart-webmin"; } | crontab -
+          { crontab -l; echo "0 9 $day $month * $(which otoressl) apache -y --restart-webmin"; } | crontab -
         else
-          { crontab -l; echo "0 9 $day $month * $(which otoressl) apache"; } | crontab -
+          { crontab -l; echo "0 9 $day $month * $(which otoressl) apache -y"; } | crontab -
         fi
       fi
     ;;
