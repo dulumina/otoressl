@@ -22,7 +22,7 @@ while (( "$#" )); do
       fi
       ;;
     -v|--version)
-      echo "otoressl version 1.0"
+      echo "otoressl version 1.0.1"
       exit 0
       ;;
     -w|--restart-webmin)

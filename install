@@ -16,10 +16,10 @@ if [[ ! -d /etc/otoressl ]]; then
 fi
 
 ## Download config
-curl -o /etc/otoressl/config https://raw.githubusercontent.com/deadlyug/otoressl/v1.0/config
+curl -o /etc/otoressl/config https://raw.githubusercontent.com/deadlyug/otoressl/v1.0.1/config
 
 ## Download script otoressl
-curl -o /bin/otoressl https://raw.githubusercontent.com/deadlyug/otoressl/v1.0/otoressl
+curl -o /bin/otoressl https://raw.githubusercontent.com/deadlyug/otoressl/v1.0.1/otoressl
 chmod +x /bin/otoressl
 
 echo ""
