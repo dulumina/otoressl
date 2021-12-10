@@ -28,7 +28,7 @@ You dont need to configure config file.
 
 ## Using
 
-#### Via Webmin Console
+### Via Webmin Console
 
 ```
 certbot certificates
@@ -54,7 +54,9 @@ otoressl apache -y
 
 > for other usecase you can follow method via **ssh** or **putty**, the difference only when you use **Webmin Console** you have to spesify option **-y**
 
-#### Via ssh or putty 
+:warning: **Webmin**: have to always use option -y, if you forget to spesify -y you have to cancel using <kbd>ctrl + c</kbd> if not the script cannot end, and it will be looping forever. maybe can make your server error. so please when use **Webmin Console** you have to spesify option **-y**
+
+### Via ssh or putty 
 
 run the script
 
