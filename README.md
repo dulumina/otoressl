@@ -27,6 +27,35 @@ ID_BOT_TELEGRAM="<your-chat-id-or-group-id-here" # Chat ID
 You dont need to configure config file. 
 
 ## Using
+
+#### Via Webmin Console
+
+```
+certbot certificates
+```
+
+- Make sure you already configured and installed ssl certificate on target host using certbot
+- Check expire time for each host if have multiple virtual host at the same server
+- if each of virtual host have same expire time. it's okay to continue, if not. make sure the difference between expire time at least less than 10 days.
+
+after you have checked the certificates, now you can run the script
+
+if server using nginx
+
+```
+otoressl nginx -y
+```
+
+if server using apache
+
+```
+otoressl apache -y
+```
+
+> for other usecase you can follow method via **ssh** or **putty**, the difference only when you use **Webmin Console** you have to spesify option **-y**
+
+#### Via ssh or putty 
+
 run the script
 
 ```
@@ -42,7 +71,7 @@ otoressl nginx
 or
 
 ```
-otoressl httpd
+otoressl apache
 ```
 
 if you want to temporary disable firewall during the renewing, you can pass option like this 
@@ -59,7 +88,7 @@ otoressl nginx --disable-firewall iptables
 ```
 - using firewalld 
 ```
-otoressl httpd --disable-firewall firewalld
+otoressl apache --disable-firewall firewalld
 ```
 
 if you want to restart webmin after renew certificate
