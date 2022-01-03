@@ -8,7 +8,6 @@ echo "------------------------------"
 
 echo ""
 echo "uninstalling otoressl.."
-echo ""
 
 if [[ -d /etc/otoressl ]]; then
   rm -rf /etc/otoressl

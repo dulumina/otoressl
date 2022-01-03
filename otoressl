@@ -4,9 +4,6 @@
 PARAMS=""
 while (( "$#" )); do
   case "$1" in
-    --no-dbcreds)
-      shift
-      ;;
     nginx)
       WEB_SERVER="nginx"
       shift
@@ -231,15 +228,19 @@ case $OS in
         "iptables")
           echo "-------------------------------"
           echo "mengaktifkan kembali firewall.."
+          echo "activating firewall.."
           if initSystem start iptables; then
             echo "berhasil mengaktifkan firewall.."
+            echo "firewall activated.."
           fi
           ;;
         "firewalld")
           echo "-------------------------------"
           echo "mengaktifkan kembali firewall.."
+          echo "activating firewall.."
           if initSystem start firewalld; then
             echo "berhasil mengaktifkan firewall.."
+            echo "firewall activated.."
           fi
           ;;
       esac
@@ -251,15 +252,19 @@ case $OS in
         "iptables")
           echo "--------------------------"
           echo "mengaktifkan firewall.."
+          echo "activating firewall.."
           if iptables-restore < /etc/sysconfig/iptables; then
             echo "berhasil mengaktifkan firewall.."
+            echo "firewall activated.."
           fi
           ;;
         "firewalld")
           echo "--------------------------"
           echo "mengaktifkan firewall.."
+          echo "activating firewall.."
           if initSystem start firewalld; then
             echo "berhasil mengaktifkan firewall.."
+            echo "firewall activated.."
           fi
           ;;
       esac
@@ -277,15 +282,19 @@ function stopFirewall() {
           "iptables")
             echo "--------------------------"
             echo "menon-aktifkan firewall.."
+            echo "deactivating firewall.."
             if initSystem stop iptables; then
               echo "berhasil menon-aktifkan firewall.."
+              echo "firewall deactivated.."
             fi
             ;;
           "firewalld")
             echo "--------------------------"
             echo "menon-aktifkan firewall.."
+            echo "deactivating firewall.."
             if initSystem stop firewalld; then
               echo "berhasil menon-aktifkan firewall.."
+              echo "firewall deactivated.."
             fi
             ;;
         esac
@@ -300,17 +309,21 @@ function stopFirewall() {
             fi
             echo "--------------------------"
             echo "menon-aktifkan firewall.."
+            echo "deactivating firewall.."
             if iptables-save > /etc/sysconfig/iptables; then
               if iptables -F; then
                 echo "berhasil menon-aktifkan firewall.."
+                echo "firewall deactivated.."
               fi
             fi
             ;;
           "firewalld")
             echo "--------------------------"
             echo "menon-aktifkan firewall.."
+            echo "deactivating firewall.."
             if initSystem stop firewalld; then
               echo "berhasil menon-aktifkan firewall.."
+              echo "firewall deactivated.."
             fi
             ;;
         esac
@@ -331,21 +344,14 @@ if [[ ! $SKIP_CONFIRMATION ]]; then
 
   $certbot certificates
   echo ""
-  echo "
-  ---------------------------------------------------------------------------------------------"
-  echo "
-  - Make sure you already configured and installed ssl certificate on target host using certbot
-  - Check expire time for each host if have multiple virtual host at the same server
-  - if each of virtual host have same expire time. it's okay to continue, if not. make sure the difference between expire time at least less than 10 days.
+  echo "  ---------------------------------------------------------------------------------------------"
+  echo "  - Make sure you already configured and installed ssl certificate on target host using certbot
   -----------------------------------------------------------------------------------------------
-  - Pastikan anda sudah pernah menginstall dan mengkonfigurasi sertifikat ssl menggunakan certbot
-  - Periksa waktu kadaluarsa sertifikat ssl jika lebih dari 1 host
-  - jika waktu kadaluarsa antara virtual host sama, maka script akan berjalan lancar. jika tidak. pastikan perbedaan waktu kadaluarsa antara virtual host kurang dari 10 hari.
-  "
+  - Pastikan anda sudah pernah menginstall dan mengkonfigurasi sertifikat ssl menggunakan certbot"
 
   while true
   do
-    echo    "-----------------------------"
+    echo    "--------------------------------"
     read -p "Are you sure to continue? (y/n) : " INSTALL
     if [[ $INSTALL != "n" ]]; then
       if [[ $INSTALL != "y" ]]; then
@@ -365,6 +371,7 @@ echo ""
 validDay=$($certbot certificates | grep Expiry | awk 'FNR==1 {print $6}')
 echo "----------------------------------------"
 echo "Mengecek tanggal expire sertifikat ssl.."
+echo "Checking ssl certificate expire time.."
 source /etc/otoressl/config
 
 if [[ $validDay < 30 ]] || echo $validDay | grep EXPIRED; then
@@ -424,18 +431,23 @@ menghitung hari untuk dibuatkan cronjob/automatic renew certificate...
 
 Success! certificate renewed..
 menghitung hari untuk dibuatkan cronjob/automatic renew certificate...
+counting day to create a cron job for certificate renewal..
 " &>/dev/null &
     fi
 
     echo "-----------------------------"
     echo "Success! certificate renewed..
 menghitung hari untuk dibuatkan cronjob/automatic renew certificate...
+counting day to create a cron job for certificate renewal..
 "
   fi
 else
   echo "--------------------------------------------------------"
   echo "belum memasuki waktu yang pas untuk renew certificate..."
   echo "menghitung hari untuk dibuatkan cronjob/automatic renew certificate..."
+  echo "--------------------------------------------------------"
+  echo "it's not the right time to renew the certificate.."
+  echo "counting day to create a cron job for certificate renewal.."
 fi
 
 isCrontab=$(which crontab)
@@ -602,10 +614,12 @@ if [[ $TOKEN_BOT_TELEGRAM && $ID_BOT_TELEGRAM != "" ]]; then
      curl -s -X POST https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage -d chat_id=${ID_BOT_TELEGRAM} -d text="NOTIF SSL $(cat /etc/hostname)
 
 berhasil membuat cronjob untuk otomasi renew certificate..
+success create cronjob for automatic renew certificate..
 " &>/dev/null &
 fi
 echo "------------------------------------------------------------"
 echo "berhasil membuat cronjob untuk otomasi renew certificate.."
+echo "success create cronjob for automatic renew certificate.."
 echo "------------"
 echo "Cronjob List"
 echo ""
