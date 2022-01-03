@@ -4,6 +4,9 @@
 PARAMS=""
 while (( "$#" )); do
   case "$1" in
+    --no-dbcreds)
+      shift
+      ;;
     nginx)
       WEB_SERVER="nginx"
       shift
@@ -22,7 +25,7 @@ while (( "$#" )); do
       fi
       ;;
     -v|--version)
-      echo "otoressl version 1.0.1"
+      echo "otoressl version 1.0.2"
       exit 0
       ;;
     -w|--restart-webmin)
@@ -39,7 +42,7 @@ while (( "$#" )); do
          echo "   nginx   - if server use nginx"
          echo "   apache  - if server use apache"
          echo "OPTION includes:"
-         echo "   -f | --disable-firewall - flips the C_OPT variable from 0 to 1"
+         echo "   -f | --disable-firewall - insert firewall tools to disable"
          echo "   ARGUMENT includes:"
          echo "       iptables - if server use iptables"
          echo "       firewalld - if server use firewalld"
@@ -65,7 +68,7 @@ while (( "$#" )); do
          echo "   nginx   - if server use nginx"
          echo "   apache  - if server use apache"
          echo "OPTION includes:"
-         echo "   -f | --disable-firewall - flips the C_OPT variable from 0 to 1"
+         echo "   -f | --disable-firewall - insert firewall tools to disable"
          echo "   ARGUMENT includes:"
          echo "       iptables - if server use iptables"
          echo "       firewalld - if server use firewalld"
@@ -89,7 +92,7 @@ eval set -- "$PARAMS"
 cd "$(dirname "$0")"
 
 OS=$(hostnamectl | grep "Operating System" | awk '{print $3}')
-certbot=$(which certbot)
+certbot=$(if ! which certbot; then which certbot-auto; fi )
 
 if [[ $WEB_SERVER != "nginx" ]]; then
   if [[ $WEB_SERVER != "apache" ]]; then
@@ -103,7 +106,7 @@ if [[ $WEB_SERVER != "nginx" ]]; then
     echo "   nginx   - if server use nginx"
     echo "   apache  - if server use apache"
     echo "OPTION includes:"
-    echo "   -f | --disable-firewall - flips the C_OPT variable from 0 to 1"
+    echo "   -f | --disable-firewall - insert firewall tools to disable"
     echo "   ARGUMENT includes:"
     echo "       iptables - if server use iptables"
     echo "       firewalld - if server use firewalld"
@@ -272,7 +275,7 @@ fi
 
 if [[ ! $SKIP_CONFIRMATION ]]; then
 
-  certbot certificates
+  $certbot certificates
   echo ""
   echo "---------------------------------------------------------------------------------------------"
   echo "- Make sure you already configured and installed ssl certificate on target host using certbot
@@ -303,7 +306,7 @@ fi
 
 
 echo ""
-validDay=$(certbot certificates | grep Expiry | awk 'FNR==1 {print $6}')
+validDay=$($certbot certificates | grep Expiry | awk 'FNR==1 {print $6}')
 echo "----------------------------------------"
 echo "Mengecek tanggal expire sertifikat ssl.."
 source /etc/otoressl/config
@@ -323,7 +326,7 @@ Renewing certificate..
 
   stopFirewall;
 
-  if $(which certbot) renew; then
+  if $certbot renew; then
 
     startFirewall;
 
