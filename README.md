@@ -1,4 +1,4 @@
-# Automatic Renew Certificate | otoressl
+# Automatic Renew Certificate | otoressl | BETA
 
 This tools for create cronjob for automaic renew certificate
 
@@ -9,12 +9,12 @@ cronie
 
 ## Installing
 ```
-curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.1/install | bash
+curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.1.1/install | bash
 ```
 
 #### FOR UNTAD Admin
 ```
-curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.1/install-untad-admin | bash
+curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.1.1/install-untad-admin | bash
 ```
 
 ## Configuring
@@ -106,7 +106,13 @@ or with disable firewall
 otoressl <web-server-service> --disable-firewall <firewall-service> --restart-webmin
 ```
 
+## Uninstall
+```
+curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.1.1/uninstall | bash
+```
+
 ## Tested
+- [x] CentOS 6
 - [x] CentOS 7
 - [ ] CentOS 8
 - [x] Ubuntu 20.04

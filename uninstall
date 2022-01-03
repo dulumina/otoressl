@@ -1,0 +1,30 @@
+#!/bin/bash
+
+echo "-----------------"
+echo "| otoressl by UG |"
+echo "------------------------------"
+echo "| copyright belongs to Allah |"
+echo "------------------------------"
+
+echo ""
+echo "uninstalling otoressl.."
+echo ""
+
+if [[ -d /etc/otoressl ]]; then
+  rm -rf /etc/otoressl
+fi
+
+if [[ -f /etc/otoressl/config ]]; then
+  rm -rf /etc/otoressl/config
+fi
+
+if [[ -f /bin/otoressl ]]; then
+  rm -rf /bin/otoressl
+fi
+
+if [[ -f /bin/send-notify ]]; then
+  rm -rf /bin/send-notify
+fi
+
+echo ""
+echo "otoressl uninstalled successfully.."

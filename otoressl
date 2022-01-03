@@ -25,7 +25,7 @@ while (( "$#" )); do
       fi
       ;;
     -v|--version)
-      echo "otoressl version 1.1"
+      echo "otoressl version 1.1.1"
       exit 0
       ;;
     -w|--restart-webmin)
@@ -331,8 +331,10 @@ if [[ ! $SKIP_CONFIRMATION ]]; then
 
   $certbot certificates
   echo ""
-  echo "---------------------------------------------------------------------------------------------"
-  echo "- Make sure you already configured and installed ssl certificate on target host using certbot
+  echo "
+  ---------------------------------------------------------------------------------------------"
+  echo "
+  - Make sure you already configured and installed ssl certificate on target host using certbot
   - Check expire time for each host if have multiple virtual host at the same server
   - if each of virtual host have same expire time. it's okay to continue, if not. make sure the difference between expire time at least less than 10 days.
   -----------------------------------------------------------------------------------------------
