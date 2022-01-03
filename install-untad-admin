@@ -7,15 +7,6 @@ echo "| copyright belongs to Allah |"
 echo "------------------------------"
 
 echo ""
-echo "checking dependency.."
-CURL=$(which curl)
-if [[ $CURL == "" ]]; then
-echo ""
-echo "cannot find curl, please insall curl.."
-exit 1
-fi
-
-echo ""
 echo "installing otoressl.."
 echo ""
 
@@ -25,7 +16,7 @@ if [[ ! -d /etc/otoressl ]]; then
 fi
 
 ## Download config
-if ! curl -o /etc/otoressl/config https://raw.githubusercontent.com/deadlyug/otoressl/v1.1.1/config; then
+if ! curl -o /etc/otoressl/config https://raw.githubusercontent.com/deadlyug/otoressl/v1.1.2/config; then
 echo ""
 echo "otoressl installation failed.."
 echo "please retry.."
@@ -33,7 +24,7 @@ exit 1
 fi
 
 ## Download script otoressl
-if ! curl -o /bin/otoressl https://raw.githubusercontent.com/deadlyug/otoressl/v1.1.1/otoressl; then
+if ! curl -o /bin/otoressl https://raw.githubusercontent.com/deadlyug/otoressl/v1.1.2/otoressl; then
 echo ""
 echo "otoressl installation failed.."
 echo "please retry.."
