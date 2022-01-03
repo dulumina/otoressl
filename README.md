@@ -9,12 +9,12 @@ cronie
 
 ## Installing
 ```
-curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.0.2/install | bash
+curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.1/install | bash
 ```
 
 #### FOR UNTAD Admin
 ```
-curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.0.2/install-untad-admin | bash
+curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.1/install-untad-admin | bash
 ```
 
 ## Configuring
