@@ -91,7 +91,18 @@ eval set -- "$PARAMS"
 # cd to script directory
 cd "$(dirname "$0")"
 
-OS=$(hostnamectl | grep "Operating System" | awk '{print $3}')
+function initSystem(){
+  action=$1
+  app=$2
+  isSystemctl=$(which systemctl)
+  if [[ $isSystemctl != "" ]]; then 
+    systemctl $action $app; 
+  else
+    service $app $action;
+  fi
+}
+
+OS=$(if ! hostnamectl | grep "Operating System" | awk '{print $3}'; then cat /etc/*release | grep NAME= | awk 'FNR==1 {print $1}' | sed 's/NAME="//'; fi)
 certbot=$(if ! which certbot; then which certbot-auto; fi )
 
 if [[ $WEB_SERVER != "nginx" ]]; then
@@ -119,16 +130,39 @@ if [[ $WEB_SERVER != "nginx" ]]; then
 fi
 
 function restartNginx() {
-  if ! systemctl restart nginx; then
+  if ! initSystem restart nginx; then
     echo "-------------------------"
     echo "Failed to restart nginx.."
     echo "Maybe apache is running and use the same port with nginx"
     echo "Try to stop apache.."
-    if systemctl status httpd; then
-      if systemctl stop httpd; then
-        if ! systemctl restart nginx; then
+    if initSystem status httpd; then
+      if initSystem stop httpd; then
+        if ! initSystem restart nginx; then
           "apache has been stop but nginx still cannot start, maybe something were wrong with nginx configuration.. "
-          if systemctl start httpd; then
+          if initSystem start httpd; then
+            "Success restart apache.."
+          fi
+          exit 1
+        fi
+      fi
+    else
+      "cannot stop apache, maybe the service already stop. it makes maybe there's a error with you nginx configuration.."
+    fi
+  else
+    echo "Success restart nginx.."
+  fi
+}
+function restartNginxUbuntu() {
+  if ! initSystem restart nginx; then
+    echo "-------------------------"
+    echo "Failed to restart nginx.."
+    echo "Maybe apache is running and use the same port with nginx"
+    echo "Try to stop apache.."
+    if initSystem status apache2; then
+      if initSystem stop apache2; then
+        if ! initSystem restart nginx; then
+          "apache has been stop but nginx still cannot start, maybe something were wrong with nginx configuration.. "
+          if initSystem start apache2; then
             "Success restart apache.."
           fi
           exit 1
@@ -142,16 +176,39 @@ function restartNginx() {
   fi
 }
 function restartApache() {
-  if ! systemctl restart apache2; then
+  if ! initSystem restart httpd; then
     echo "----"
     echo "Failed to restart apache.."
     echo "Maybe nginx is running and use the same port with apache"
     echo "Try to stop nginx.."
-    if systemctl status nginx; then
-      if systemctl stop nginx; then
-        if ! systemctl restart apache2; then
+    if initSystem status nginx; then
+      if initSystem stop nginx; then
+        if ! initSystem restart httpd; then
           "nginx has been stop but apache still cannot start, maybe something were wrong with apache configuration.. "
-          if systemctl start nginx; then
+          if initSystem start nginx; then
+            "Success restart nginx.."
+          fi
+          exit 1
+        fi
+      fi
+     else
+    "cannot stop nginx, maybe the service already stop. it makes maybe there's a error with you apache configuration.."
+    fi
+  else
+    echo "Success restart apache.."
+  fi
+}
+function restartApacheUbuntu() {
+  if ! initSystem restart apache2; then
+    echo "----"
+    echo "Failed to restart apache.."
+    echo "Maybe nginx is running and use the same port with apache"
+    echo "Try to stop nginx.."
+    if initSystem status nginx; then
+      if initSystem stop nginx; then
+        if ! initSystem restart apache2; then
+          "nginx has been stop but apache still cannot start, maybe something were wrong with apache configuration.. "
+          if initSystem start nginx; then
             "Success restart nginx.."
           fi
           exit 1
@@ -174,14 +231,14 @@ case $OS in
         "iptables")
           echo "-------------------------------"
           echo "mengaktifkan kembali firewall.."
-          if systemctl start iptables; then
+          if initSystem start iptables; then
             echo "berhasil mengaktifkan firewall.."
           fi
           ;;
         "firewalld")
           echo "-------------------------------"
           echo "mengaktifkan kembali firewall.."
-          if systemctl start firewalld; then
+          if initSystem start firewalld; then
             echo "berhasil mengaktifkan firewall.."
           fi
           ;;
@@ -192,9 +249,6 @@ case $OS in
     if [[ $FIREWALL != "" ]]; then
       case $FIREWALL in
         "iptables")
-          if [[ ! -d /etc/sysconfig ]]; then
-            mkdir /etc/sysconfig
-          fi
           echo "--------------------------"
           echo "mengaktifkan firewall.."
           if iptables-restore < /etc/sysconfig/iptables; then
@@ -204,7 +258,7 @@ case $OS in
         "firewalld")
           echo "--------------------------"
           echo "mengaktifkan firewall.."
-          if systemctl start firewalld; then
+          if initSystem start firewalld; then
             echo "berhasil mengaktifkan firewall.."
           fi
           ;;
@@ -223,14 +277,14 @@ function stopFirewall() {
           "iptables")
             echo "--------------------------"
             echo "menon-aktifkan firewall.."
-            if systemctl stop iptables; then
+            if initSystem stop iptables; then
               echo "berhasil menon-aktifkan firewall.."
             fi
             ;;
           "firewalld")
             echo "--------------------------"
             echo "menon-aktifkan firewall.."
-            if systemctl stop firewalld; then
+            if initSystem stop firewalld; then
               echo "berhasil menon-aktifkan firewall.."
             fi
             ;;
@@ -255,7 +309,7 @@ function stopFirewall() {
           "firewalld")
             echo "--------------------------"
             echo "menon-aktifkan firewall.."
-            if systemctl stop firewalld; then
+            if initSystem stop firewalld; then
               echo "berhasil menon-aktifkan firewall.."
             fi
             ;;
@@ -328,16 +382,18 @@ Renewing certificate..
 
   if $certbot renew; then
 
+    validDay=$($certbot certificates | grep Expiry | awk 'FNR==1 {print $6}')
+
     startFirewall;
 
     case $OS in
       "Ubuntu")
           case $WEB_SERVER in
             "nginx")
-              restartNginx;
+              restartNginxUbuntu;
               ;;
             "apache")
-              restartApache;
+              restartApacheUbuntu;
               ;;
           esac
         ;;
@@ -354,7 +410,7 @@ Renewing certificate..
     esac
     
     if [[ $RESTART_WEBMIN ]]; then
-      systemctl restart webmin
+      initSystem restart webmin
       RESTART_WEBMIN=false
     fi
 
@@ -401,7 +457,7 @@ if [[ $isCrontab == "" ]]; then
       fi
       ;;
     "Ubuntu")
-      if apt-get update && apt-get install cron; then
+      if apt-get update -y && apt-get install cron -y; then
         if ! systemctl enable --now cron; then
           echo "---------------------------------"
           echo "cronjob service failed to start.."
@@ -416,7 +472,7 @@ if [[ $isCrontab == "" ]]; then
       fi
       ;;
     "CentOS")
-      if yum update && yum install crond; then
+      if yum update -y && yum install cronie -y; then
         if ! systemctl enable --now crond; then
           echo "---------------------------------"
           echo "cronjob service failed to start.."
@@ -429,6 +485,14 @@ if [[ $isCrontab == "" ]]; then
         echo "exiting.."
         exit 1
       fi
+      ;;
+    *)
+      if ! yum update -y && yum install cronie -y; then
+        if ! apt-get update -y && apt-get install cron; then
+          apt update -y && apt install cron
+        fi
+      fi
+      init start crond
       ;;
   esac
 else
@@ -451,6 +515,14 @@ else
       ;;
     "CentOS")
       if ! systemctl enable --now crond; then
+        echo "---------------------------------"
+        echo "cronjob service failed to start.."
+        echo "exiting.."
+        exit 1
+      fi
+      ;;
+    *)
+      if ! initSystem start crond; then
         echo "---------------------------------"
         echo "cronjob service failed to start.."
         echo "exiting.."
@@ -523,16 +595,20 @@ case $WEB_SERVER in
     ;;
 esac
 
-send-notify "berhasil membuat cronjob untuk otomisasi renew certificate.."
+send-notify "berhasil membuat cronjob untuk otomasi renew certificate.."
 if [[ $TOKEN_BOT_TELEGRAM && $ID_BOT_TELEGRAM != "" ]]; then
      curl -s -X POST https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage -d chat_id=${ID_BOT_TELEGRAM} -d text="NOTIF SSL $(cat /etc/hostname)
 
-berhasil membuat cronjob untuk otomisasi renew certificate..
+berhasil membuat cronjob untuk otomasi renew certificate..
 " &>/dev/null &
 fi
 echo "------------------------------------------------------------"
-echo "berhasil membuat cronjob untuk otomisasi renew certificate.."
+echo "berhasil membuat cronjob untuk otomasi renew certificate.."
 echo "------------"
 echo "Cronjob List"
 echo ""
 crontab -l
+echo ""
+echo "------"
+echo "FINISH"
+echo "------"
