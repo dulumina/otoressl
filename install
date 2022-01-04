@@ -6,6 +6,16 @@ echo "------------------------------"
 echo "| copyright belongs to Allah |"
 echo "------------------------------"
 
+## Checking dependencies
+echo "checking dependencies.."
+echo ""
+if ! which which; then
+  echo "please install which package and then reinstall otoressl.."
+  echo "example (centos): yum install which -y"
+  echo "exiting.."
+  exit 1
+fi
+
 echo ""
 echo "installing otoressl.."
 echo ""

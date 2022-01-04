@@ -12,7 +12,7 @@ cronie
 curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.1.2/install | bash
 ```
 
-#### FOR UNTAD Admin
+#### For UNTAD Admin
 ```
 curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.1.2/install-untad-admin | bash
 ```

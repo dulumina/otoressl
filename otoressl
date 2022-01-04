@@ -351,6 +351,7 @@ if [[ ! $SKIP_CONFIRMATION ]]; then
 
   while true
   do
+    echo ""
     echo    "--------------------------------"
     read -p "Are you sure to continue? (y/n) : " INSTALL
     if [[ $INSTALL != "n" ]]; then
