@@ -9,12 +9,12 @@ cronie
 
 ## Installing
 ```
-curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.1.2/install | bash
+curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.1.3/install | bash
 ```
 
 #### For UNTAD Admin
 ```
-curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.1.2/install-untad-admin | bash
+curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.1.3/install-untad-admin | bash
 ```
 
 ## Configuring
@@ -108,7 +108,7 @@ otoressl <web-server-service> --disable-firewall <firewall-service> --restart-we
 
 ## Uninstall
 ```
-curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.1.2/uninstall | bash
+curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.1.3/uninstall | bash
 ```
 
 ## Tested
