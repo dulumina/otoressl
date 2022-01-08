@@ -22,7 +22,7 @@ while (( "$#" )); do
       fi
       ;;
     -v|--version)
-      echo "otoressl version 1.2.2"
+      echo "otoressl version 1.2.3"
       exit 0
       ;;
     -d|--domain-name)
@@ -343,6 +343,7 @@ function stopFirewall() {
       ;;
   esac
 }
+
 function checkValidDay() {
   if [[ $validDay == "" ]]; then
     echo "------"
@@ -351,6 +352,7 @@ function checkValidDay() {
     send-notify "ERROR!
 Expiry date not valid or Domain $DOMAIN_NAME not found..
 "
+  fi
     if [[ $TOKEN_BOT_TELEGRAM && $ID_BOT_TELEGRAM != "" ]]; then
     curl -s -X POST https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage -d chat_id=${ID_BOT_TELEGRAM} -d text="NOTIF SSL @$(cat /etc/hostname)
 
