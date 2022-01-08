@@ -48,6 +48,7 @@ while (( "$#" )); do
          echo "   nginx   - if server use nginx"
          echo "   apache  - if server use apache"
          echo "OPTION includes:"
+         echo "   -d | --domain-name - single renew"
          echo "   -f | --disable-firewall - insert firewall tools to disable"
          echo "   ARGUMENT includes:"
          echo "       iptables - if server use iptables"
@@ -74,6 +75,7 @@ while (( "$#" )); do
          echo "   nginx   - if server use nginx"
          echo "   apache  - if server use apache"
          echo "OPTION includes:"
+         echo "   -d | --domain-name - single renew"
          echo "   -f | --disable-firewall - insert firewall tools to disable"
          echo "   ARGUMENT includes:"
          echo "       iptables - if server use iptables"
@@ -123,6 +125,7 @@ if [[ $WEB_SERVER != "nginx" ]]; then
     echo "   nginx   - if server use nginx"
     echo "   apache  - if server use apache"
     echo "OPTION includes:"
+    echo "   -d | --domain-name - single renew"
     echo "   -f | --disable-firewall - insert firewall tools to disable"
     echo "   ARGUMENT includes:"
     echo "       iptables - if server use iptables"
@@ -259,7 +262,7 @@ case $OS in
     if [[ $FIREWALL != "" ]]; then
       case $FIREWALL in
         "iptables")
-          echo "--------------------------"
+          echo "------------------------"
           echo "mengaktifkan firewall.."
           echo "activating firewall.."
           if iptables-restore < /etc/sysconfig/iptables; then
@@ -268,7 +271,7 @@ case $OS in
           fi
           ;;
         "firewalld")
-          echo "--------------------------"
+          echo "------------------------"
           echo "mengaktifkan firewall.."
           echo "activating firewall.."
           if initSystem start firewalld; then
@@ -289,7 +292,7 @@ function stopFirewall() {
       if [[ $FIREWALL != "" ]]; then
         case $FIREWALL in
           "iptables")
-            echo "--------------------------"
+            echo "-------------------------"
             echo "menon-aktifkan firewall.."
             echo "deactivating firewall.."
             if initSystem stop iptables; then
@@ -298,7 +301,7 @@ function stopFirewall() {
             fi
             ;;
           "firewalld")
-            echo "--------------------------"
+            echo "-------------------------"
             echo "menon-aktifkan firewall.."
             echo "deactivating firewall.."
             if initSystem stop firewalld; then
@@ -316,7 +319,7 @@ function stopFirewall() {
             if [[ ! -d /etc/sysconfig ]]; then
               mkdir /etc/sysconfig
             fi
-            echo "--------------------------"
+            echo "-------------------------"
             echo "menon-aktifkan firewall.."
             echo "deactivating firewall.."
             if iptables-save > /etc/sysconfig/iptables; then
@@ -327,7 +330,7 @@ function stopFirewall() {
             fi
             ;;
           "firewalld")
-            echo "--------------------------"
+            echo "-------------------------"
             echo "menon-aktifkan firewall.."
             echo "deactivating firewall.."
             if initSystem stop firewalld; then
