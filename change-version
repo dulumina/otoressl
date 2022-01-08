@@ -1,0 +1,17 @@
+#!/bin/bash
+sed -i 's/'$1'/'$2'/g' ./otoressl
+sed -i 's/'$1'/'$2'/g' ./install
+sed -i 's/'$1'/'$2'/g' ./install-untad-admin
+sed -i 's/'$1'/'$2'/g' ./README.md
+echo "OTORESSL"
+cat ./otoressl | grep $2
+echo ""
+echo "INSTALL"
+cat ./install | grep $2
+echo ""
+echo "INSTALL-UNTAD-ADMIN"
+cat ./install-untad-admin | grep $2
+echo ""
+echo "README"
+cat ./README.md | grep $2
+echo ""
