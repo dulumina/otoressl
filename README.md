@@ -9,12 +9,12 @@ cronie
 
 ## Installing
 ```
-curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.2.5/install | bash
+curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.2.6/install | bash
 ```
 
 #### For UNTAD Admin
 ```
-curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.2.5/install-untad-admin | bash
+curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.2.6/install-untad-admin | bash
 ```
 
 ## Configuring
@@ -54,11 +54,11 @@ otoressl apache -y
 
 #### Single Renew
 ```
-otoressl <web-server> -d <domain-name> -y
+otoressl <web-server> -s <domain-name> -y
 ```
 example:
 ```
-otoressl nginx -d ug.co.id -y
+otoressl nginx -s ug.co.id -y
 ```
 
 :information_source: for other usecase you can follow method via **ssh** or **putty**, the difference only when you use **Webmin Console** you have to spesify option **-y**
@@ -117,16 +117,16 @@ otoressl <web-server-service> --disable-firewall <firewall-service> --restart-we
 
 #### Single Renew
 ```
-otoressl <web-server> -d <domain-name>
+otoressl <web-server> -s <domain-name>
 ```
 example:
 ```
-otoressl nginx -d ug.co.id
+otoressl nginx -s ug.co.id
 ```
 
 ## Uninstall
 ```
-curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.2.5/uninstall | bash
+curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.2.6/uninstall | bash
 ```
 
 ## Tested

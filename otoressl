@@ -22,12 +22,11 @@ while (( "$#" )); do
       fi
       ;;
     -v|--version)
-      echo "otoressl version 1.2.5"
+      echo "otoressl version 1.2.6"
       exit 0
       ;;
     -a|--ors-all)
       ORS_ALL=true
-      exit 0
       ;;
     -s|--ors-single)
       if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
