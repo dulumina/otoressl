@@ -374,7 +374,7 @@ function getValidDay() {
   if [[ $DOMAIN_NAME == "" ]]; then
     validDay=$($certbot certificates | grep Expiry | awk 'FNR==1 {print $6}')
   else
-    validDay=$(certbot certificates | grep -A 3 $DOMAIN_NAME | head -3)
+    validDay=$($certbot certificates | grep -A 3 $DOMAIN_NAME | head -3)
     echo $validDay | awk '{print $11}' > /tmp/otoressl-output
     validDay=$(cat /tmp/otoressl-output )
   fi
@@ -391,7 +391,11 @@ fi
 
 if [[ ! $SKIP_CONFIRMATION ]]; then
 
-  $certbot certificates
+  if [[ $DOMAIN_NAME == "" ]]; then
+    $certbot certificates
+  else
+    $certbot certificates | grep -A 3 $DOMAIN_NAME | head -3
+  fi
   echo ""
   echo "  ---------------------------------------------------------------------------------------------"
   echo "  - Make sure you already configured and installed ssl certificate on target host using certbot
