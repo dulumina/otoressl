@@ -22,10 +22,14 @@ while (( "$#" )); do
       fi
       ;;
     -v|--version)
-      echo "otoressl version 1.2.4"
+      echo "otoressl version 1.2.5"
       exit 0
       ;;
-    -d|--domain-name)
+    -a|--ors-all)
+      ORS_ALL=true
+      exit 0
+      ;;
+    -s|--ors-single)
       if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
         DOMAIN_NAME=$2
         shift 2
@@ -48,15 +52,16 @@ while (( "$#" )); do
          echo "   nginx   - if server use nginx"
          echo "   apache  - if server use apache"
          echo "OPTION includes:"
-         echo "   -d | --domain-name - single renew"
+         echo "   -a | --ors-all - renew all"
          echo "   -f | --disable-firewall - insert firewall tools to disable"
+         echo "   -h | --help - displays this message"
          echo "   ARGUMENT includes:"
          echo "       iptables - if server use iptables"
          echo "       firewalld - if server use firewalld"
+         echo "   -s | --ors-single - single renew"
          echo "   -v - show otoressl version"
          echo "   -w | --restart-webmin - restart webmin after renew"
          echo "   -y - skip confirmation"
-         echo "   -h | --help - displays this message"
          exit 0
       ;;
     -*|--*=) # unsupported flags
@@ -75,15 +80,16 @@ while (( "$#" )); do
          echo "   nginx   - if server use nginx"
          echo "   apache  - if server use apache"
          echo "OPTION includes:"
-         echo "   -d | --domain-name - single renew"
+         echo "   -a | --ors-all - renew all"
          echo "   -f | --disable-firewall - insert firewall tools to disable"
+         echo "   -h | --help - displays this message"
          echo "   ARGUMENT includes:"
          echo "       iptables - if server use iptables"
          echo "       firewalld - if server use firewalld"
+         echo "   -s | --ors-single - single renew"
          echo "   -v - show otoressl version"
          echo "   -w | --restart-webmin - restart webmin after renew"
          echo "   -y - skip confirmation"
-         echo "   -h | --help - displays this message"
          exit 1
      ;;
     # *) # preserve positional arguments
@@ -125,15 +131,16 @@ if [[ $WEB_SERVER != "nginx" ]]; then
     echo "   nginx   - if server use nginx"
     echo "   apache  - if server use apache"
     echo "OPTION includes:"
-    echo "   -d | --domain-name - single renew"
+    echo "   -a | --ors-all - renew all"
     echo "   -f | --disable-firewall - insert firewall tools to disable"
+    echo "   -h | --help - displays this message"
     echo "   ARGUMENT includes:"
     echo "       iptables - if server use iptables"
     echo "       firewalld - if server use firewalld"
+    echo "   -s | --ors-single - single renew"
     echo "   -v - show otoressl version"
     echo "   -w | --restart-webmin - restart webmin after renew"
     echo "   -y - skip confirmation"
-    echo "   -h | --help - displays this message"
     exit 1
   fi
 fi
@@ -638,10 +645,10 @@ else
 fi
 
 if [[ $DOMAIN_NAME == "" ]]; then
-  crontab -l | sed 's/.*otoressl.*//' | crontab -
+  crontab -l | sed 's/.*--ors-all.*//' | crontab -
   crontab -l | sed '/^$/d'| crontab -
 else
-  crontab -l | sed 's/.*'$DOMAIN_NAME'.*//' | crontab -
+  crontab -l | sed 's/.*--ors-single '$DOMAIN_NAME'.*//' | crontab -
   crontab -l | sed '/^$/d'| crontab -
 fi
 
@@ -656,30 +663,30 @@ function cronjob() {
       "iptables")
         if [[ $RESTART_WEBMIN ]]; then
             if [[ $DOMAIN_NAME != "" ]]; then
-                { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --disable-firewall iptables --restart-webmin -d $DOMAIN_NAME"; } | crontab -
+                { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --disable-firewall iptables --restart-webmin --ors-single $DOMAIN_NAME"; } | crontab -
               else
-                { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --disable-firewall iptables --restart-webmin"; } | crontab -
+                { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --disable-firewall iptables --restart-webmin --ors-all"; } | crontab -
             fi
           else
             if [[ $DOMAIN_NAME != "" ]]; then
-              { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --disable-firewall iptables -d $DOMAIN_NAME"; } | crontab -
+              { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --disable-firewall iptables --ors-single $DOMAIN_NAME"; } | crontab -
             else
-              { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --disable-firewall iptables"; } | crontab -
+              { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --disable-firewall iptables --ors-all"; } | crontab -
             fi
         fi
         ;;
       "firewalld")
         if [[ $RESTART_WEBMIN ]]; then
             if [[ $DOMAIN_NAME != "" ]]; then
-                { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --disable-firewall firewalld --restart-webmin -d $DOMAIN_NAME"; } | crontab -
+                { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --disable-firewall firewalld --restart-webmin --ors-single $DOMAIN_NAME"; } | crontab -
               else
-                { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --disable-firewall firewalld --restart-webmin"; } | crontab -
+                { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --disable-firewall firewalld --restart-webmin --ors-all"; } | crontab -
             fi
           else
             if [[ $DOMAIN_NAME != "" ]]; then
-              { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --disable-firewall firewalld -d $DOMAIN_NAME"; } | crontab -
+              { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --disable-firewall firewalld --ors-single $DOMAIN_NAME"; } | crontab -
             else
-              { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --disable-firewall firewalld"; } | crontab -
+              { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --disable-firewall firewalld --ors-all"; } | crontab -
             fi
         fi
         ;;
@@ -687,15 +694,15 @@ function cronjob() {
   else
     if [[ $RESTART_WEBMIN ]]; then
       if [[ $DOMAIN_NAME != "" ]]; then
-        { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --restart-webmin -d $DOMAIN_NAME"; } | crontab -
+        { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --restart-webmin --ors-single $DOMAIN_NAME"; } | crontab -
         else
-        { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --restart-webmin"; } | crontab -
+        { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --restart-webmin --ors-all"; } | crontab -
       fi
       else
         if [[ $DOMAIN_NAME != "" ]]; then
-          { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y -d $DOMAIN_NAME"; } | crontab -
+          { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --ors-single $DOMAIN_NAME"; } | crontab -
           else
-          { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y"; } | crontab -
+          { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --ors-all"; } | crontab -
         fi
     fi
   fi
