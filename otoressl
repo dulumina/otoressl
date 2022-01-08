@@ -22,8 +22,17 @@ while (( "$#" )); do
       fi
       ;;
     -v|--version)
-      echo "otoressl version 1.1.3"
+      echo "otoressl version 1.2.0"
       exit 0
+      ;;
+    -d|--domain-name)
+      if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
+        DOMAIN_NAME=$2
+        shift 2
+      else
+        echo "Error: Argument for $1 is missing" >&2
+        exit 1
+      fi
       ;;
     -w|--restart-webmin)
       RESTART_WEBMIN=true
@@ -331,6 +340,43 @@ function stopFirewall() {
       ;;
   esac
 }
+function checkValidDay() {
+  if [[ $validDay == "EXPIRED" ]] || echo $validDay | egrep -e "^[0-9]*$"; then
+    echo "-------------------"
+    echo "Expiry date valid.."
+  else
+    echo "------"
+    echo "ERROR!"
+    echo "Expiry date not valid.."
+    echo "Expiry date: $validDay"
+
+    send-notify "ERROR!
+Expiry date not valid..
+Expiry date: $validDay
+    "
+    if [[ $TOKEN_BOT_TELEGRAM && $ID_BOT_TELEGRAM != "" ]]; then
+    curl -s -X POST https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage -d chat_id=${ID_BOT_TELEGRAM} -d text="NOTIF SSL @$(cat /etc/hostname)
+
+ERROR!
+Expiry date not valid..
+Expiry date: $validDay
+" &>/dev/null &
+    fi
+    exit 1
+  fi
+}
+
+function getValidDay() {
+  echo ""
+  if [[ $DOMAIN_NAME == "" ]]; then
+    validDay=$($certbot certificates | grep Expiry | awk 'FNR==1 {print $6}')
+  else
+    validDay=$(certbot certificates | grep -A 3 $DOMAIN_NAME | head -3)
+    echo $validDay | awk '{print $11}' > /tmp/otoressl-output
+    validDay=$(cat /tmp/otoressl-output )
+  fi
+  checkValidDay;
+}
 
 if [[ $certbot == "" ]]; then
   echo "---------------------------------------------------------------------------------------------------"
@@ -367,9 +413,9 @@ if [[ ! $SKIP_CONFIRMATION ]]; then
 
 fi
 
+# RENEW-SECTION
+getValidDay;
 
-echo ""
-validDay=$($certbot certificates | grep Expiry | awk 'FNR==1 {print $6}')
 echo "----------------------------------------"
 echo "Mengecek tanggal expire sertifikat ssl.."
 echo "Checking ssl certificate expire time.."
@@ -390,9 +436,15 @@ Renewing certificate..
 
   stopFirewall;
 
-  if $certbot renew; then
+  if [[ $DOMAIN_NAME != "" ]]; then
+    renewcert="$certbot renew --cert-name $DOMAIN_NAME"
+  else
+    renewcert="$certbot renew"
+  fi
 
-    validDay=$($certbot certificates | grep Expiry | awk 'FNR==1 {print $6}')
+  if $renewcert; then
+
+    getValidDay;
 
     startFirewall;
 
@@ -431,17 +483,28 @@ menghitung hari untuk dibuatkan cronjob/automatic renew certificate...
        curl -s -X POST https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage -d chat_id=${ID_BOT_TELEGRAM} -d text="NOTIF SSL $(cat /etc/hostname)
 
 Success! certificate renewed..
-menghitung hari untuk dibuatkan cronjob/automatic renew certificate...
 counting day to create a cron job for certificate renewal..
 " &>/dev/null &
     fi
 
-    echo "-----------------------------"
+    echo "---------------------------=--"
     echo "Success! certificate renewed..
-menghitung hari untuk dibuatkan cronjob/automatic renew certificate...
-counting day to create a cron job for certificate renewal..
+counting day to create a cron job for certificate renewal.."
+  else 
+    send-notify "Failed! certificate not renewed..
 "
+    if [[ $TOKEN_BOT_TELEGRAM && $ID_BOT_TELEGRAM != "" ]]; then
+       curl -s -X POST https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage -d chat_id=${ID_BOT_TELEGRAM} -d text="NOTIF SSL $(cat /etc/hostname)
+
+Failed! certificate not renewed..
+" &>/dev/null &
+    fi
+
+    echo "---------------------------------"
+    echo "Failed! certificate not renewed.."
+    exit 1
   fi
+
 else
   echo "--------------------------------------------------------"
   echo "belum memasuki waktu yang pas untuk renew certificate..."
@@ -527,8 +590,7 @@ else
         echo "exiting.."
         exit 1
       fi
-      ;;
-    "CentOS")
+      ;; "CentOS")
       if ! systemctl enable --now crond; then
         echo "---------------------------------"
         echo "cronjob service failed to start.."
@@ -547,66 +609,76 @@ else
   esac
 fi
 
-crontab -l | sed 's/.*otoressl.*//' | crontab -
-crontab -l | sed '/^$/d'| crontab -
+if [[ $DOMAIN_NAME == "" ]]; then
+  crontab -l | sed 's/.*otoressl.*//' | crontab -
+  crontab -l | sed '/^$/d'| crontab -
+else
+  crontab -l | sed 's/.*'$DOMAIN_NAME'.*//' | crontab -
+  crontab -l | sed '/^$/d'| crontab -
+fi
 
 renewDay="$(($validDay - 10))"
 
 month=$(date --date="+$renewDay days" +%-m)
 day=$(date --date="+$renewDay days" +%-d)
 
+function cronjob() {
+  if [[ $FIREWALL != "" ]]; then
+    case $FIREWALL in
+      "iptables")
+        if [[ $RESTART_WEBMIN ]]; then
+            if [[ $DOMAIN_NAME != "" ]]; then
+                { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --disable-firewall iptables --restart-webmin -d $DOMAIN_NAME"; } | crontab -
+              else
+                { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --disable-firewall iptables --restart-webmin"; } | crontab -
+            fi
+          else
+            if [[ $DOMAIN_NAME != "" ]]; then
+              { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --disable-firewall iptables -d $DOMAIN_NAME"; } | crontab -
+            else
+              { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --disable-firewall iptables"; } | crontab -
+            fi
+        fi
+        ;;
+      "firewalld")
+        if [[ $RESTART_WEBMIN ]]; then
+            if [[ $DOMAIN_NAME != "" ]]; then
+                { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --disable-firewall firewalld --restart-webmin -d $DOMAIN_NAME"; } | crontab -
+              else
+                { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --disable-firewall firewalld --restart-webmin"; } | crontab -
+            fi
+          else
+            if [[ $DOMAIN_NAME != "" ]]; then
+              { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --disable-firewall firewalld -d $DOMAIN_NAME"; } | crontab -
+            else
+              { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --disable-firewall firewalld"; } | crontab -
+            fi
+        fi
+        ;;
+    esac
+  else
+    if [[ $RESTART_WEBMIN ]]; then
+      if [[ $DOMAIN_NAME != "" ]]; then
+        { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --restart-webmin -d $DOMAIN_NAME"; } | crontab -
+        else
+        { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y --restart-webmin"; } | crontab -
+      fi
+      else
+        if [[ $DOMAIN_NAME != "" ]]; then
+          { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y -d $DOMAIN_NAME"; } | crontab -
+          else
+          { crontab -l; echo "0 9 $day $month * $(which otoressl) $1 -y"; } | crontab -
+        fi
+    fi
+  fi
+}
+
 case $WEB_SERVER in
   "nginx")
-      if [[ $FIREWALL != "" ]]; then
-        case $FIREWALL in
-          "iptables")
-            if [[ $RESTART_WEBMIN ]]; then
-              { crontab -l; echo "0 9 $day $month * $(which otoressl) nginx -y --disable-firewall iptables --restart-webmin"; } | crontab -
-              else
-              { crontab -l; echo "0 9 $day $month * $(which otoressl) nginx -y --disable-firewall iptables"; } | crontab -
-            fi
-            ;;
-          "firewalld")
-            if [[ $RESTART_WEBMIN ]]; then
-              { crontab -l; echo "0 9 $day $month * $(which otoressl) nginx -y --disable-firewall firewalld --restart-webmin"; } | crontab -
-            else
-              { crontab -l; echo "0 9 $day $month * $(which otoressl) nginx -y --disable-firewall firewalld"; } | crontab -
-            fi
-            ;;
-        esac
-      else
-        if [[ $RESTART_WEBMIN ]]; then
-          { crontab -l; echo "0 9 $day $month * $(which otoressl) nginx -y --restart-webmin"; } | crontab -
-        else
-          { crontab -l; echo "0 9 $day $month * $(which otoressl) nginx -y"; } | crontab -
-        fi
-      fi
+      cronjob nginx;
     ;;
   "apache")
-      if [[ $FIREWALL != "" ]]; then
-        case $FIREWALL in
-          "iptables")
-            if [[ $RESTART_WEBMIN ]]; then
-              { crontab -l; echo "0 9 $day $month * $(which otoressl) apache -y --disable-firewall iptables --restart-webmin"; } | crontab -
-              else
-              { crontab -l; echo "0 9 $day $month * $(which otoressl) apache -y --disable-firewall iptables"; } | crontab -
-            fi
-            ;;
-          "firewalld")
-            if [[ $RESTART_WEBMIN ]]; then
-              { crontab -l; echo "0 9 $day $month * $(which otoressl) apache -y --disable-firewall firewalld --restart-webmin"; } | crontab -
-            else
-              { crontab -l; echo "0 9 $day $month * $(which otoressl) apache -y --disable-firewall firewalld"; } | crontab -
-            fi
-            ;;
-        esac
-      else
-        if [[ $RESTART_WEBMIN ]]; then
-          { crontab -l; echo "0 9 $day $month * $(which otoressl) apache -y --restart-webmin"; } | crontab -
-        else
-          { crontab -l; echo "0 9 $day $month * $(which otoressl) apache -y"; } | crontab -
-        fi
-      fi
+      cronjob apache;
     ;;
 esac
 
