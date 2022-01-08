@@ -22,7 +22,7 @@ while (( "$#" )); do
       fi
       ;;
     -v|--version)
-      echo "otoressl version 1.2.1"
+      echo "otoressl version 1.2.2"
       exit 0
       ;;
     -d|--domain-name)
@@ -344,6 +344,21 @@ function stopFirewall() {
   esac
 }
 function checkValidDay() {
+  if [[ $validDay == "" ]]; then
+    echo "------"
+    echo "ERROR!"
+    echo "Expiry date not valid or Domain $DOMAIN_NAME not found.."
+    send-notify "ERROR!
+Expiry date not valid or Domain $DOMAIN_NAME not found..
+"
+    if [[ $TOKEN_BOT_TELEGRAM && $ID_BOT_TELEGRAM != "" ]]; then
+    curl -s -X POST https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage -d chat_id=${ID_BOT_TELEGRAM} -d text="NOTIF SSL @$(cat /etc/hostname)
+
+Expiry date not valid or Domain $DOMAIN_NAME not found..
+"
+    exit 1
+  fi
+
   if [[ $validDay == "EXPIRED" ]] || echo $validDay | egrep -e "^[0-9]*$"; then
     echo "-------------------"
     echo "Expiry date valid.."
@@ -380,6 +395,9 @@ function getValidDay() {
   fi
   checkValidDay;
 }
+
+# RENEW-SECTION
+getValidDay;
 
 if [[ $certbot == "" ]]; then
   echo "---------------------------------------------------------------------------------------------------"
@@ -419,9 +437,6 @@ if [[ ! $SKIP_CONFIRMATION ]]; then
   done
 
 fi
-
-# RENEW-SECTION
-getValidDay;
 
 echo "----------------------------------------"
 echo "Mengecek tanggal expire sertifikat ssl.."
@@ -483,32 +498,36 @@ Renewing certificate..
       RESTART_WEBMIN=false
     fi
 
-    send-notify "Success! certificate renewed..
+    send-notify "SUCCESS! 
+certificate renewed..
 menghitung hari untuk dibuatkan cronjob/automatic renew certificate...
 "
     if [[ $TOKEN_BOT_TELEGRAM && $ID_BOT_TELEGRAM != "" ]]; then
        curl -s -X POST https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage -d chat_id=${ID_BOT_TELEGRAM} -d text="NOTIF SSL $(cat /etc/hostname)
 
-Success! certificate renewed..
+SUCCESS! 
+certificate renewed..
 counting day to create a cron job for certificate renewal..
 " &>/dev/null &
     fi
 
-    echo "---------------------------=--"
-    echo "Success! certificate renewed..
+    echo "------------------------------"
+    echo "SUCCESS! certificate renewed..
 counting day to create a cron job for certificate renewal.."
   else 
-    send-notify "Failed! certificate not renewed..
+    send-notify "FAILED!
+certificate not renewed..
 "
     if [[ $TOKEN_BOT_TELEGRAM && $ID_BOT_TELEGRAM != "" ]]; then
        curl -s -X POST https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage -d chat_id=${ID_BOT_TELEGRAM} -d text="NOTIF SSL $(cat /etc/hostname)
 
-Failed! certificate not renewed..
+FAILED!
+certificate not renewed..
 " &>/dev/null &
     fi
 
     echo "---------------------------------"
-    echo "Failed! certificate not renewed.."
+    echo "FAILED! certificate not renewed.."
     exit 1
   fi
 
