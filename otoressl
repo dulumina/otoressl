@@ -22,7 +22,7 @@ while (( "$#" )); do
       fi
       ;;
     -v|--version)
-      echo "otoressl version 1.2.7"
+      echo "otoressl version 1.2.8"
       exit 0
       ;;
     -a|--ors-all)
@@ -366,6 +366,11 @@ Expiry date not valid or Domain $DOMAIN_NAME not found..
       "
     fi
     exit 1
+  fi
+
+  getLastCharacterValidDay=$(echo ${validDay: -1})
+  if [[ $getLastCharacterValidDay == ")" ]]; then
+    validDay=$(echo $validDay | sed 's/.$//')
   fi
 
   if [[ $validDay == "EXPIRED" ]] || echo $validDay | egrep -e "^[0-9]*$" > /tmp/otoressl-output; then
