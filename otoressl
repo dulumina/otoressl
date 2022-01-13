@@ -22,7 +22,7 @@ while (( "$#" )); do
       fi
       ;;
     -v|--version)
-      echo "otoressl version 1.2.8"
+      echo "otoressl version 1.2.9"
       exit 0
       ;;
     -a|--ors-all)
@@ -404,6 +404,9 @@ function getValidDay() {
     validDay=$($certbot certificates | grep Expiry | awk 'FNR==1 {print $6}')
   else
     validDay=$($certbot certificates | grep -A 3 $DOMAIN_NAME | head -3)
+    if echo $validDay | grep -e "Serial" > /tmp/otoressl-output; then
+      validDay=$($certbot certificates | grep -A 4 $DOMAIN_NAME | head -4)
+    fi
     echo $validDay | awk '{print $11}' > /tmp/otoressl-output
     validDay=$(cat /tmp/otoressl-output )
   fi
