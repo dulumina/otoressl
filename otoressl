@@ -406,8 +406,10 @@ function getValidDay() {
     validDay=$($certbot certificates | grep -A 3 $DOMAIN_NAME | head -3)
     if echo $validDay | grep -e "Serial" > /tmp/otoressl-output; then
       validDay=$($certbot certificates | grep -A 4 $DOMAIN_NAME | head -4)
+      echo $validDay | awk '{print $14}' > /tmp/otoressl-output
+    else
+      echo $validDay | awk '{print $11}' > /tmp/otoressl-output
     fi
-    echo $validDay | awk '{print $11}' > /tmp/otoressl-output
     validDay=$(cat /tmp/otoressl-output )
   fi
   checkValidDay;
