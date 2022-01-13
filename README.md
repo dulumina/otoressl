@@ -9,12 +9,12 @@ cronie
 
 ## Installing
 ```
-curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.2.9/install | bash
+curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.2.10/install | bash
 ```
 
 #### For UNTAD Admin
 ```
-curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.2.9/install-untad-admin | bash
+curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.2.10/install-untad-admin | bash
 ```
 
 ## Configuring
@@ -126,7 +126,7 @@ otoressl nginx -s ug.co.id
 
 ## Uninstall
 ```
-curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.2.9/uninstall | bash
+curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.2.10/uninstall | bash
 ```
 
 ## Tested
