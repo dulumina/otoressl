@@ -22,7 +22,7 @@ while (( "$#" )); do
       fi
       ;;
     -v|--version)
-      echo "otoressl version 1.2.11"
+      echo "otoressl version 1.2.12"
       exit 0
       ;;
     -a|--ors-all)
@@ -547,6 +547,8 @@ FAILED!
 certificate not renewed..
 " &>/dev/null &
     fi
+
+    startFirewall;
 
     echo "---------------------------------"
     echo "FAILED! certificate not renewed.."
