@@ -26,7 +26,11 @@ if [[ ! -d /etc/otoressl ]]; then
 fi
 
 ## Download config
+<<<<<<< HEAD
 if ! curl -o /etc/otoressl/config https://raw.githubusercontent.com/deadlyug/otoressl/v1.3-beta/config; then
+=======
+if ! curl -o /etc/otoressl/config https://raw.githubusercontent.com/deadlyug/otoressl/v1.2.13/config; then
+>>>>>>> main
 echo ""
 echo "otoressl installation failed.."
 echo "please retry.."
@@ -34,7 +38,11 @@ exit 1
 fi
 
 ## Download script otoressl
+<<<<<<< HEAD
 if ! curl -o /bin/otoressl https://raw.githubusercontent.com/deadlyug/otoressl/v1.3-beta/otoressl; then
+=======
+if ! curl -o /bin/otoressl https://raw.githubusercontent.com/deadlyug/otoressl/v1.2.13/otoressl; then
+>>>>>>> main
 echo ""
 echo "otoressl installation failed.."
 echo "please retry.."
