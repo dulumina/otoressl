@@ -22,7 +22,7 @@ while (( "$#" )); do
       fi
       ;;
     -v|--version)
-      echo "otoressl version 1.2.13"
+      echo "otoressl version 1.2.14"
       exit 0
       ;;
     -a|--ors-all)
@@ -465,7 +465,7 @@ echo "Mengecek tanggal expire sertifikat ssl.."
 echo "Checking ssl certificate expire time.."
 source /etc/otoressl/config
 
-if [[ $validDay < 30 ]] || echo $validDay | grep EXPIRED; then
+if [[ $validDay -le 30 ]] || echo $validDay | grep EXPIRED; then
 
   send-notify "Renewing certificate.."
 
