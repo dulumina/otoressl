@@ -18,7 +18,8 @@ curl -s https://raw.githubusercontent.com/deadlyug/otoressl/v1.2.14/install-unta
 ```
 
 ## Configuring
-Insert your Telegram bot token and chat id to config file
+Insert your Telegram bot token and chat id to config file.
+config file location /etc/otoressl/config
 ```
 TOKEN_BOT_TELEGRAM="<your-random-bot-token-here>" # BOT TOKEN
 ID_BOT_TELEGRAM="<your-chat-id-or-group-id-here" # Chat ID
